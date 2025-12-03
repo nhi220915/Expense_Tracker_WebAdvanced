@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker Dashboard - 3 Tabs Layout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS Global Reset & Fonts --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5; 
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* --- Mint Green Palette & Variables --- */
+        :root {
+            --mint-dark: #00a896; 
+            --mint-medium: #00d1c1; 
+            --mint-lighter: #e6f7f5; 
+            --emerald-green: #27ae60; 
+            --warning-red: #e74c3c; 
+            --gradient-2: linear-gradient(135deg, #00a896, #007a6c); 
+            --text-color: #2c3e50; 
+            --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.08); 
+        }
+
+        /* --- Header (Topbar) --- */
+        header {
+            background-color: #ffffff; 
+            padding: 15px 40px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.7em; 
+            font-weight: 800; 
+            color: var(--mint-dark); 
+        }
+
+        /* Time Filter Block */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px; 
+        }
+        
+        /* Month Selector Design */
+        .date-filter-inline {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .date-filter-inline label {
+             font-size: 1.05em;
+             font-weight: 600;
+             color: var(--text-color);
+        }
+        .date-filter-inline input[type="month"] {
+            padding: 10px 15px; 
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 1.1em; 
+            color: var(--text-color);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .user-info {
+            font-size: 0.95em;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* --- Main Layout --- */
+        .grid-container {
+            display: block; 
+            margin: 25px auto;
+            padding: 0 40px; 
+        }
+
+        .tab-content-container {
+            margin-top: 25px;
+        }
+
+        /* --- Shared Card/Block Styling --- */
+        .dashboard-block {
+            padding: 20px 25px; 
+            border-radius: 16px; 
+            background-color: #fff;
+            box-shadow: var(--shadow-soft); 
+            margin-bottom: 15px; 
+        }
+        .dashboard-block h1 {
+            font-weight: 700;
+            font-size: 1.8em;
+            color: var(--text-color);
+        }
+        .dashboard-block h2, .dashboard-block h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* --- Main Tabs --- */
+        .main-tabs {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+        .main-tab-button {
+            padding: 12px 25px;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1em;
+            border-radius: 8px 8px 0 0;
+        }
+        .main-tab-button.active {
+            background: #fff; 
+            color: var(--mint-dark);
+            border-bottom: 2px solid #fff; 
+            margin-bottom: -2px; 
+        }
+
+        /* --- Form Input Area --- */
+        .entry-form-container { 
+            background-color: var(--mint-lighter); 
+            padding: 15px 20px;
+            border-radius: 16px; 
+            margin-bottom: 15px; 
+        }
+        .main-entry-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-areas:
+                "amount category date"
+                "note note button";
+            gap: 10px; 
+            margin-top: 10px; 
+        }
+        .main-entry-form input, .main-entry-form select {
+            padding: 12px 15px; 
+            border-radius: 10px;
+            font-size: 1.1em; 
+            background-color: #fff; 
+        }
+        .btn-add {
+            background: var(--gradient-2); 
+            color: white;
+            padding: 15px 25px; 
+            font-size: 1.1em; 
+            border-radius: 16px;
+        }
+        
+        /* Input Grid Positioning (Forms) */
+        #entryAmount { grid-area: amount; }
+        #entryCategory { grid-area: category; }
+        #entryNote { grid-area: note; }
+        #entryDate { grid-area: date; }
+        #mainEntryForm .btn-add, #incomeEntryForm .btn-add { 
+            grid-area: button;
+            align-self: center; 
+            height: 100%;
+        }
+
+        /* Budget Setup (Compact) */
+        #budgetForm {
+            grid-template-columns: 2fr 120px 100px;
+            gap: 10px;
+        }
+        #budgetForm select, #budLimit, #budgetForm .btn-add {
+            padding: 10px 15px; 
+            font-size: 1em;
+        }
+
+        
+        /* --- TRANSACTION FILTER STYLES --- */
+        .transaction-filters {
+            gap: 10px; 
+            padding-bottom: 10px; 
+            margin-bottom: 10px; 
+        }
+        .filter-button {
+            padding: 8px 18px; 
+            border-radius: 25px; 
+            font-size: 1.05em; 
+        }
+        .filter-button.active {
+            background-color: var(--mint-medium); 
+            color: white;
+            border-color: var(--mint-dark);
+        }
+
+        /* --- TRANSACTION LIST STYLING (History) --- */
+        .transaction-list {
+            padding: 0;
+            margin: 0;
+        }
+        .transaction-list li {
+             display: grid;
+             grid-template-columns: 2fr 0.8fr 0.5fr; 
+             align-items: center;
+             padding: 10px 0; 
+             border-bottom: 1px solid #eee; 
+             font-size: 1.05em; 
+        }
+        .expense-amount, .income-amount {
+            font-weight: 800; 
+            text-align: right; 
+        }
+
+        /* --- BUDGET PROGRESS STYLING (FIXED) --- */
+        .budget-progress-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px; 
+        }
+        .budget-item {
+            padding: 10px 0;
+            margin-bottom: 5px; /* Giảm khoảng cách dưới */
+            border-bottom: 1px dashed #eee;
+        }
+        .budget-item h4 {
+            /* THAY ĐỔI: Tăng khoảng cách dưới tiêu đề h4 */
+            margin-bottom: 5px; 
+            padding-bottom: 0;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Giữ cho nội dung căn đầu */
+            font-size: 1.05em;
+            color: var(--text-color);
+        }
+        .budget-item h4 span:first-child {
+             font-weight: 600;
+        }
+        .budget-item h4 span:last-child {
+             /* Tách số tiền và trạng thái (Close to limit!) bằng một khoảng trống nhỏ */
+             font-weight: 700;
+             text-align: right;
+             margin-left: 10px; 
+             line-height: 1.2;
+             max-width: 50%;
+        }
+        .progress-bar-container {
+            height: 8px;
+            margin-bottom: 0; 
+        }
+        
+        /* Dashboard Layout Grid */
+        .dashboard-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 0;
+        }
+        /* Style for the two pie charts in the right column */
+        .grid-column-right {
+             display: flex;
+             flex-direction: column;
+             gap: 15px; 
+        }
+        
+        /* Pie Chart Container */
+        .pie-chart-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 20px auto;
+            border: 4px solid #fff; 
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Responsive adjustments (as before) */
+        @media (max-width: 1024px) {
+            .dashboard-content-grid {
+                grid-template-columns: 1fr; 
+            }
+        }
+        @media (max-width: 768px) {
+             .main-entry-form {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "amount"
+                    "category"
+                    "date"
+                    "note"
+                    "button";
+            }
+            .transaction-list li {
+                 grid-template-columns: 1.3fr 1fr 0.7fr; 
+                 font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Expense Tracker PRO</div>
+        
+        <div class="header-controls">
+            <div class="user-info">
+                Hello, NhiTran
+            </div>
+        </div>
+        
+    </header>
+
+    <div class="grid-container">
+        
+        <div class="main-tabs">
+            <button class="main-tab-button active" onclick="openMainTab(event, 'Spending')">Spending</button>
+            <button class="main-tab-button" onclick="openMainTab(event, 'Income')">Income</button>
+            <button class="main-tab-button" onclick="openMainTab(event, 'Dashboard')">Dashboard</button>
+        </div>
+
+        <div class="tab-content-container">
+            
+            <div id="Spending" class="main-tab-content active" style="display: block;">
+                <div class="dashboard-block">
+                    <h1>📝 Enter Expense</h1>
+
+                    <div class="entry-form-container">
+                        <form id="mainEntryForm" class="main-entry-form">
+                            <input type="number" id="entryAmount" placeholder="Amount ($)" required min="0.01" step="0.01">
+                            <select id="entryCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="date" id="entryDate" value="2025-11-27" required>
+                            <input type="text" id="entryNote" placeholder="Note (e.g.: Highland Coffee)">
+                            <button type="submit" class="btn-add">Save Transaction</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="dashboard-block">
+                    <div class="report-section">
+                         <div class="date-filter-inline">
+                            <label for="monthFilterSpending">Filter by month:</label>
+                            <input type="month" id="monthFilterSpending" onchange="updateDashboard(this.value, 'Spending')">
+                        </div>
+                        <div class="transaction-header-content">
+                            <h3>📜 Recent Expense History</h3>
+                            <div class="transaction-filters" id="expenseFilters">
+                                <button class="filter-button active" onclick="filterTransactions('All', this)">All</button>
+                                <button class="filter-button" onclick="filterTransactions('Food', this)">Food</button>
+                                <button class="filter-button" onclick="filterTransactions('Transport', this)">Transport</button>
+                                <button class="filter-button" onclick="filterTransactions('Entertainment', this)">Entertainment</button>
+                                <button class="filter-button" onclick="filterTransactions('Utilities', this)">Utilities</button>
+                                <button class="filter-button" onclick="filterTransactions('Other', this)">Other</button>
+                            </div>
+                        </div>
+                        <ul class="transaction-list" id="recentExpenseList">
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="dashboard-block">
+                    <div class="report-section">
+                        <h3>🎯 Set Monthly Budget</h3>
+                        <form id="budgetForm" class="main-entry-form">
+                            <select id="budCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="number" id="budLimit" placeholder="Limit ($)" required min="1" step="1">
+                            <button type="submit" class="btn-add">Set Budget</button>
+                        </form>
+                    </div>
+                    <div class="report-section">
+                        <h3>Set Budgets</h3>
+                        <ul class="budget-progress-list" id="budgetList">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Income" class="main-tab-content" style="display: none;">
+                 <div class="dashboard-block">
+                    <h1>➕ Enter Income</h1>
+
+                    <div class="entry-form-container">
+                        <form id="incomeEntryForm" class="main-entry-form">
+                            <input type="number" id="incomeEntryAmount" placeholder="Amount ($)" required min="0.01" step="0.01">
+                            <select id="incomeEntryCategory" required>
+                                <option value="">Select Income Source</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Bonus">Bonus</option>
+                                <option value="Investment">Investment</option>
+                                <option value="Other Income">Other Income</option>
+                            </select>
+                            <input type="date" id="incomeEntryDate" value="2025-11-27" required>
+                            <input type="text" id="incomeEntryNote" placeholder="Source (e.g.: November Salary)">
+                            <button type="submit" class="btn-add">Save Transaction</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="dashboard-block">
+                    <div class="report-section">
+                         <div class="date-filter-inline">
+                            <label for="monthFilterIncome">Filter by month:</label>
+                            <input type="month" id="monthFilterIncome" onchange="updateDashboard(this.value, 'Income')">
+                        </div>
+                        <h3>📜 Recent Income History</h3>
+                        <ul class="transaction-list" id="recentIncomeList">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="Dashboard" class="main-tab-content" style="display: none;">
+                <div class="dashboard-content-grid">
+                    
+                    <div class="grid-column-left">
+                        <div class="dashboard-block">
+                             <div class="date-filter-inline">
+                                <label for="monthFilterDashboard">Filter by month:</label>
+                                <input type="month" id="monthFilterDashboard" onchange="updateDashboard(this.value, 'Dashboard')">
+                            </div>
+                            <h3 id="summaryTitle">📊 Financial Summary This Month</h3>
+                            <div class="summary-block income">
+                                <h4>Income</h4>
+                                <p id="incomeValue">+ $0.00</p>
+                            </div>
+                            <div class="summary-block expense">
+                                <h4>Expense</h4>
+                                <p id="expenseValue">- $0.00</p>
+                            </div>
+                            <div class="summary-block balance">
+                                <h4>Balance</h4>
+                                <p id="balanceValue">$0.00</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-block"> 
+                            <h3>💰 Current Budget Progress</h3>
+                            <ul class="budget-progress-list" id="budgetProgressList">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="grid-column-right">
+                        <div class="dashboard-block"> 
+                            <h3>📈 Expense By Category</h3>
+                            <div class="pie-chart-container" id="expensePieChart"></div>
+                            <ul class="chart-legend" id="expenseChartLegend">
+                            </ul>
+                            <p style="text-align: center; margin-top: 20px;"><a href="#" style="color: var(--mint-dark); text-decoration: none; font-weight: 600;">View detailed report</a></p>
+                        </div>
+                        
+                        <div class="dashboard-block"> 
+                            <h3>💰 Income By Source</h3>
+                            <div class="pie-chart-container" id="incomePieChart"></div>
+                            <ul class="chart-legend" id="incomeChartLegend">
+                            </ul>
+                            <p style="text-align: center; margin-top: 20px;"><a href="#" style="color: var(--mint-dark); text-decoration: none; font-weight: 600;">View detailed report</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> <script>
+    // --- DATA STATE ---
+    let monthlyData = {}; 
+    let budgetLimits = {}; 
+    let currentMonth = new Date().toISOString().substring(0, 7);
+    
+    // Income category colors (NEW)
+    const incomeColors = {
+        'Salary': '#27ae60', 
+        'Freelance': '#00a896', 
+        'Bonus': '#f39c12', 
+        'Investment': '#3498db', 
+        'Other Income': '#9b59b6' 
+    };
+
+    function formatCurrency(amount) {
+        return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function initializeData() {
+        // currentMonth được set trong updateDashboard trước khi gọi hàm này
+        if (!monthlyData[currentMonth]) {
+            monthlyData[currentMonth] = { income: [], expense: [] };
+        }
+    }
+    
+    // 1. MAIN TAB SWITCHER FUNCTION
+    function openMainTab(evt, tabName) {
+        const tabContents = document.querySelectorAll('.main-tab-content');
+        const tabButtons = document.querySelectorAll('.main-tab-button');
+        
+        tabContents.forEach(content => content.style.display = 'none');
+        tabButtons.forEach(button => button.classList.remove('active'));
+
+        document.getElementById(tabName).style.display = 'block';
+        evt.currentTarget.classList.add('active');
+
+        let filterId = tabName === 'Spending' ? 'monthFilterSpending' : 
+                       tabName === 'Income' ? 'monthFilterIncome' : 'monthFilterDashboard';
+        let monthToUse = document.getElementById(filterId).value;
+        
+        updateDashboard(monthToUse, tabName);
+    }
+    window.openMainTab = openMainTab;
+
+
+    // 2. CATEGORY FILTER FUNCTION (Giữ nguyên)
+    function filterTransactions(category, clickedButton) {
+        const listItems = document.querySelectorAll('#recentExpenseList li');
+        const buttons = document.querySelectorAll('.filter-button');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        clickedButton.classList.add('active');
+
+        listItems.forEach(item => {
+            const itemCategory = item.getAttribute('data-category');
+            
+            if (category === 'All' || itemCategory === category) {
+                item.style.display = 'grid'; 
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    window.filterTransactions = filterTransactions;
+
+    // 3. MAIN CALCULATE & RENDER FUNCTION (Đã sửa đổi)
+    function calculateAndRenderDashboard(selectedMonth, currentActiveTab) {
+        
+        const monthToFilter = selectedMonth;
+        currentMonth = monthToFilter;
+        
+        initializeData(); 
+        const data = monthlyData[monthToFilter];
+        
+        let totalIncome = data.income.reduce((sum, item) => sum + item.amount, 0);
+        let totalExpense = data.expense.reduce((sum, item) => sum + item.amount, 0);
+        
+        // --- LOGIC CHUNG CHO TẤT CẢ CÁC TAB ---
+        if (currentActiveTab === 'Spending' || currentActiveTab === 'Income' || currentActiveTab === 'Dashboard') {
+            renderTransactionLists(monthToFilter, currentActiveTab);
+        }
+
+        // --- LOGIC CHỈ DÀNH CHO TAB DASHBOARD ---
+        if (currentActiveTab === 'Dashboard') {
+            let balance = totalIncome - totalExpense;
+
+            // 1. UPDATE SUMMARY
+            document.getElementById('incomeValue').textContent = `+ $${formatCurrency(totalIncome)}`;
+            document.getElementById('expenseValue').textContent = `- $${formatCurrency(totalExpense)}`;
+            document.getElementById('balanceValue').textContent = `$${formatCurrency(balance)}`;
+            
+            // 2. UPDATE CHARTS and BUDGET PROGRESS
+            
+            // 2.1 EXPENSE BY CATEGORY
+            const expenseByCategory = data.expense.reduce((acc, item) => {
+                acc[item.category] = (acc[item.category] || 0) + item.amount;
+                return acc;
+            }, {});
+
+            let expenseChartGradient = '';
+            let expenseCurrentAngle = 0;
+            const expenseColors = { 'Food': '#00d1c1', 'Transport': '#27ae60', 'Entertainment': '#f39c12', 'Utilities': '#e74c3c', 'Other': '#00a896' };
+            const expenseCategoriesUsed = Object.keys(expenseByCategory).sort();
+            const expenseLegendUl = document.getElementById('expenseChartLegend');
+            expenseLegendUl.innerHTML = ''; 
+            const expensePieChart = document.getElementById('expensePieChart');
+
+
+            if (totalExpense > 0) {
+                expenseCategoriesUsed.forEach(category => {
+                    const amount = expenseByCategory[category];
+                    const percentage = (amount / totalExpense) * 100;
+                    const endAngle = expenseCurrentAngle + percentage;
+                    expenseChartGradient += `${expenseColors[category]} ${expenseCurrentAngle}% ${endAngle}%, `;
+                    expenseCurrentAngle = endAngle;
+
+                    const li = document.createElement('li');
+                    li.className = category.toLowerCase();
+                    li.textContent = `${category} (${Math.round(percentage)}%)`;
+                    expenseLegendUl.appendChild(li);
+                });
+                expenseChartGradient = expenseChartGradient.slice(0, -2);
+                expensePieChart.style.background = `conic-gradient(${expenseChartGradient})`;
+            } else {
+                 expensePieChart.style.background = `#e0e0e0`; 
+            }
+            
+            // 2.2 INCOME BY SOURCE
+            const incomeByCategory = data.income.reduce((acc, item) => {
+                acc[item.category] = (acc[item.category] || 0) + item.amount;
+                return acc;
+            }, {});
+            
+            let incomeChartGradient = '';
+            let incomeCurrentAngle = 0;
+            const incomeCategoriesUsed = Object.keys(incomeByCategory).sort();
+            const incomeLegendUl = document.getElementById('incomeChartLegend');
+            incomeLegendUl.innerHTML = ''; 
+            const incomePieChart = document.getElementById('incomePieChart');
+
+
+            if (totalIncome > 0) {
+                incomeCategoriesUsed.forEach(category => {
+                    const amount = incomeByCategory[category];
+                    const percentage = (amount / totalIncome) * 100;
+                    const endAngle = incomeCurrentAngle + percentage;
+                    
+                    const color = incomeColors[category] || '#ccc'; 
+                    const categoryClass = category.toLowerCase().replace(/ /g, '-');
+
+                    incomeChartGradient += `${color} ${incomeCurrentAngle}% ${endAngle}%, `;
+                    incomeCurrentAngle = endAngle;
+
+                    const li = document.createElement('li');
+                    li.className = categoryClass;
+                    li.style.setProperty('--category-color', color); 
+                    li.textContent = `${category} (${Math.round(percentage)}%)`;
+                    incomeLegendUl.appendChild(li);
+                });
+                incomeChartGradient = incomeChartGradient.slice(0, -2);
+                incomePieChart.style.background = `conic-gradient(${incomeChartGradient})`;
+            } else {
+                 incomePieChart.style.background = `#e0e0e0`; 
+            }
+
+            // 3. UPDATE BUDGET PROGRESS
+            const budgetProgressUl = document.getElementById('budgetProgressList');
+            budgetProgressUl.innerHTML = '';
+            
+            Object.keys(budgetLimits).forEach(category => {
+                const limit = budgetLimits[category];
+                const spent = expenseByCategory[category] || 0;
+                const percentage = Math.min((spent / limit) * 100, 100);
+                const color = percentage >= 90 ? 'red' : 'green';
+                const status = percentage > 100 ? '(Exceeded!)' : (percentage >= 90 ? '(Close to limit!)' : '');
+                
+                const listItem = document.createElement('li');
+                listItem.className = 'budget-item';
+                listItem.innerHTML = `
+                    <h4><span>${category}</span><span style="color: ${color === 'red' ? '#e74c3c' : '#6c7a89'};">$${formatCurrency(spent)} / $${formatCurrency(limit)} ${status}</span></h4>
+                    <div class="progress-bar-container"><div class="progress-bar ${color}" style="width: ${percentage}%;"></div></div>
+                `;
+                budgetProgressUl.appendChild(listItem);
+            });
+        }
+    }
+    window.calculateAndRenderDashboard = calculateAndRenderDashboard;
+    
+    // 4. RENDER TRANSACTION LISTS FUNCTION
+    function renderTransactionLists(monthToFilter, currentActiveTab) {
+        const data = monthlyData[monthToFilter] || { income: [], expense: [] };
+        
+        if (currentActiveTab === 'Spending') {
+            // Render Expense List
+            const expenseListUl = document.getElementById('recentExpenseList');
+            expenseListUl.innerHTML = '';
+            data.expense.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(item => {
+                const dateOnly = item.date.substring(0, 10).split('-').reverse().join('/'); // Format DD/MM/YYYY
+                
+                const listItem = document.createElement('li');
+                listItem.setAttribute('data-category', item.category); 
+                listItem.innerHTML = `
+                    <div class="transaction-name-category">
+                        <span class="name">${item.note || item.category} (${item.category})</span>
+                    </div>
+                    <span class="expense-amount">- $${formatCurrency(item.amount)}</span>
+                    <span class="transaction-date">${dateOnly}</span>
+                `;
+                expenseListUl.appendChild(listItem);
+            });
+            // --- Đảm bảo nút ALL luôn được kích hoạt lại cho Spending ---
+            const allButton = document.querySelector('#Spending .filter-button[onclick*="\'All\'"]');
+            if(allButton) { filterTransactions('All', allButton); }
+            
+        } else if (currentActiveTab === 'Income') {
+            // Render Income List
+            const incomeListUl = document.getElementById('recentIncomeList');
+            incomeListUl.innerHTML = '';
+            data.income.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(item => {
+                const dateOnly = item.date.substring(0, 10).split('-').reverse().join('/');
+                
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <div class="transaction-name-category">
+                        <span class="name">${item.note || item.category} (Income: ${item.category})</span>
+                    </div>
+                    <span class="income-amount">+ $${formatCurrency(item.amount)}</span>
+                    <span class="transaction-date">${dateOnly}</span>
+                `;
+                incomeListUl.appendChild(listItem);
+            });
+        }
+    }
+    window.renderTransactionLists = renderTransactionLists;
+
+
+    // 5. HÀM CẬP NHẬT CHUNG CHO TẤT CẢ BỘ LỌC THÁNG
+    function updateDashboard(selectedMonth, activeTab) {
+        // Lấy tab đang active nếu nó không được truyền (ví dụ: khi submit form)
+        const currentActiveTab = activeTab || document.querySelector('.main-tab-button.active').textContent.trim();
+        
+        // Nếu không có tháng được chọn, sử dụng tháng hiện tại
+        const monthToUse = selectedMonth || currentMonth;
+
+        // Đồng bộ hóa tất cả 3 bộ lọc tháng (nếu tồn tại) với tháng đang được sử dụng
+        document.getElementById('monthFilterSpending').value = monthToUse;
+        document.getElementById('monthFilterIncome').value = monthToUse;
+        document.getElementById('monthFilterDashboard').value = monthToUse;
+        
+        calculateAndRenderDashboard(monthToUse, currentActiveTab);
+    }
+    window.updateDashboard = updateDashboard;
+
+
+    // --- FORM SUBMISSION (Expense) ---
+    document.getElementById('mainEntryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('entryAmount').value);
+        const category = document.getElementById('entryCategory').value;
+        const date = document.getElementById('entryDate').value;
+        const note = document.getElementById('entryNote').value;
+        
+        const newEntry = { amount, category, date, note };
+        
+        // --- CHỈ LƯU VÀO MONTH CỦA INPUT DATE ---
+        const submissionMonth = date.substring(0, 7);
+        currentMonth = submissionMonth;
+        initializeData(); 
+        monthlyData[currentMonth].expense.unshift(newEntry);
+        
+        alert(`Added expense: ${category}, -$${formatCurrency(amount)}. (Month: ${submissionMonth})`);
+
+        this.reset();
+        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('entryCategory').value = ''; 
+        
+        // --- CẬP NHẬT GIAO DIỆN THEO THÁNG ĐANG ĐƯỢC LỌC, KHÔNG PHẢI THÁNG VỪA LƯU ---
+        const monthFilter = document.getElementById('monthFilterSpending').value; 
+        updateDashboard(monthFilter, 'Spending');
+    });
+    
+    // --- FORM SUBMISSION (Income) ---
+    document.getElementById('incomeEntryForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('incomeEntryAmount').value);
+        const category = document.getElementById('incomeEntryCategory').value;
+        const date = document.getElementById('incomeEntryDate').value;
+        const note = document.getElementById('incomeEntryNote').value;
+        
+        const newEntry = { amount, category, date, note };
+        
+        const submissionMonth = date.substring(0, 7);
+        currentMonth = submissionMonth;
+        initializeData();
+        monthlyData[currentMonth].income.unshift(newEntry);
+        
+        alert(`Added income: ${category}, +$${formatCurrency(amount)}. (Month: ${submissionMonth})`);
+
+        this.reset();
+        document.getElementById('incomeEntryDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('incomeEntryCategory').value = ''; 
+        
+        const monthFilter = document.getElementById('monthFilterIncome').value;
+        updateDashboard(monthFilter, 'Income');
+    });
+
+    // --- BUDGET FORM SUBMISSION ---
+    document.getElementById('budgetForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const category = document.getElementById('budCategory').value;
+        const limit = parseFloat(document.getElementById('budLimit').value);
+        
+        budgetLimits[category] = limit;
+        alert(`Budget set for ${category}: $${formatCurrency(limit)}.`);
+
+        const budgetListUl = document.querySelector('#budgetList');
+        budgetListUl.innerHTML = '';
+        Object.keys(budgetLimits).forEach(cat => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<span>🎯 ${cat}:</span> <span>$${formatCurrency(budgetLimits[cat])} / month</span>`;
+            budgetListUl.appendChild(listItem);
+        });
+        
+        this.reset();
+        updateDashboard(document.getElementById('monthFilterSpending').value, 'Spending'); 
+    });
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('entryDate').value = today;
+        document.getElementById('incomeEntryDate').value = today; 
+
+        const monthFilterSpending = document.getElementById('monthFilterSpending');
+        const monthFilterIncome = document.getElementById('monthFilterIncome');
+        const monthFilterDashboard = document.getElementById('monthFilterDashboard');
+
+        currentMonth = new Date().toISOString().substring(0, 7);
+        
+        // Set default value for all month filters
+        monthFilterSpending.value = currentMonth;
+        monthFilterIncome.value = currentMonth;
+        monthFilterDashboard.value = currentMonth;
+        
+        // Open the "Spending" tab by default
+        const spendingTabButton = document.querySelector('.main-tab-button[onclick*="\'Spending\'"]');
+        if (spendingTabButton) {
+            openMainTab({ currentTarget: spendingTabButton }, 'Spending');
+        }
+        
+        // Initial render for the current month
+        updateDashboard(currentMonth, 'Spending'); 
+    });
+    
+    </script>
+</body>
+</html>
