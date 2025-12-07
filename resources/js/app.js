@@ -1,7 +1,17 @@
 import './bootstrap';
 
-import Alpine from 'alpinejs';
+// Import components
+import { filterTransactions } from './components/filter.js';
+import { openMainTab } from './components/tabs.js';
+import { formatCurrency, updateDashboard } from './components/utils.js';
 
-window.Alpine = Alpine;
+// Import pages (sẽ được gọi từ Blade templates)
+export { initExpensePage } from './pages/expense.js';
+export { initIncomePage } from './pages/income.js';
+export { initDashboardPage } from './pages/dashboard.js';
 
-Alpine.start();
+// Make functions globally available
+window.filterTransactions = filterTransactions;
+window.openMainTab = openMainTab;
+window.formatCurrency = formatCurrency;
+window.updateDashboard = updateDashboard;

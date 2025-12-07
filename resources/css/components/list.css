@@ -1,0 +1,46 @@
+/* --- TRANSACTION FILTER STYLES --- */
+.transaction-filters {
+    gap: 10px; 
+    padding-bottom: 10px; 
+    margin-bottom: 10px; 
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.filter-button {
+    padding: 8px 18px; 
+    border-radius: 25px; 
+    font-size: 1.05em;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-button.active {
+    background-color: var(--mint-medium); 
+    color: white;
+    border-color: var(--mint-dark);
+}
+
+/* --- TRANSACTION LIST STYLING (History) --- */
+.transaction-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.transaction-list li {
+    display: grid;
+    grid-template-columns: 2fr 0.8fr 0.5fr; 
+    align-items: center;
+    padding: 10px 0; 
+    border-bottom: 1px solid #eee; 
+    font-size: 1.05em; 
+}
+
+.expense-amount, 
+.income-amount {
+    font-weight: 800; 
+    text-align: right; 
+}

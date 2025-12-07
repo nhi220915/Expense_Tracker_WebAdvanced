@@ -1,0 +1,56 @@
+/* Income Form - Grid Positioning */
+#incomeEntryAmount { 
+    grid-area: amount; 
+}
+
+#incomeEntryCategory { 
+    grid-area: category; 
+}
+
+#incomeEntryNote { 
+    grid-area: note; 
+}
+
+#incomeEntryDate { 
+    grid-area: date; 
+}
+
+#incomeEntryForm .btn-add { 
+    grid-area: button;
+    align-self: center; 
+    height: 100%;
+}
+
+/* Income Amount Styling */
+.income-amount {
+    font-weight: 800; 
+    text-align: right;
+    color: var(--emerald-green);
+}
+
+/* Income List - No filters, simpler layout */
+#recentIncomeList {
+    margin-top: 10px;
+}
+
+/* Report Section Spacing for Income page */
+.report-section {
+    margin-bottom: 20px;
+}
+
+.report-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments for Income page */
+@media (max-width: 768px) {
+    #incomeEntryForm {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "amount"
+            "category"
+            "date"
+            "note"
+            "button";
+    }
+}

@@ -1,0 +1,20 @@
+/* Pie Chart Container */
+.pie-chart-container {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    margin: 20px auto;
+    border: 4px solid #fff; 
+    box-shadow: var(--shadow-soft);
+}
+
+.chart-legend {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.chart-legend li {
+    padding: 5px 0;
+    font-size: 0.95em;
+}

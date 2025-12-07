@@ -1,0 +1,49 @@
+/* Dashboard Layout Grid */
+.dashboard-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 0;
+}
+
+.grid-column-right {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+.grid-column-left {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Summary Blocks */
+.summary-block {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+.summary-block.income {
+    background: #e8f5e9;
+}
+
+.summary-block.expense {
+    background: #ffebee;
+}
+
+.summary-block.balance {
+    background: #e3f2fd;
+}
+
+.summary-block h4 {
+    margin: 0 0 10px 0;
+    font-size: 1em;
+}
+
+.summary-block p {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 700;
+}

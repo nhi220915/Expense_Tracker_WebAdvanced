@@ -1,0 +1,62 @@
+/* --- Main Layout --- */
+.grid-container {
+    display: block; 
+    margin: 25px auto;
+    padding: 0 40px; 
+}
+
+.tab-content-container {
+    margin-top: 25px;
+}
+
+/* --- Shared Card/Block Styling --- */
+.dashboard-block {
+    padding: 20px 25px; 
+    border-radius: 16px; 
+    background-color: #fff;
+    box-shadow: var(--shadow-soft); 
+    margin-bottom: 15px; 
+}
+
+.dashboard-block h1 {
+    font-weight: 700;
+    font-size: 1.8em;
+    color: var(--text-color);
+}
+
+.dashboard-block h2, 
+.dashboard-block h3 {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+/* Month Selector Design */
+.date-filter-inline {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.date-filter-inline label {
+    font-size: 1.05em;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.date-filter-inline input[type="month"] {
+    padding: 10px 15px; 
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1.1em; 
+    color: var(--text-color);
+    cursor: pointer;
+    transition: border-color 0.3s;
+}

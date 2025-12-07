@@ -1,0 +1,21 @@
+/* --- CSS Global Reset & Fonts --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5; 
+    color: #333;
+    line-height: 1.6;
+}
+
+/* --- Mint Green Palette & Variables --- */
+:root {
+    --mint-dark: #00a896; 
+    --mint-medium: #00d1c1; 
+    --mint-lighter: #e6f7f5; 
+    --emerald-green: #27ae60; 
+    --warning-red: #e74c3c; 
+    --gradient-2: linear-gradient(135deg, #00a896, #007a6c); 
+    --text-color: #2c3e50; 
+    --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.08); 
+}

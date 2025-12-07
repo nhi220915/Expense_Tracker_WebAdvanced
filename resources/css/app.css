@@ -1,3 +1,42 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+
+/* Import Components */
+@import './components/variables.css';
+@import './components/header.css';
+@import './components/layout.css';
+@import './components/tabs.css';
+@import './components/form.css';
+@import './components/list.css';
+@import './components/budget.css';
+@import './components/chart.css';
+
+/* Import Pages */
+@import './pages/expense.css';
+@import './pages/income.css';
+@import './pages/dashboard.css';
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .dashboard-content-grid {
+        grid-template-columns: 1fr; 
+    }
+}
+
+@media (max-width: 768px) {
+    .main-entry-form {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "amount"
+            "category"
+            "date"
+            "note"
+            "button";
+    }
+    
+    .transaction-list li {
+        grid-template-columns: 1.3fr 1fr 0.7fr; 
+        font-size: 1em;
+    }
+}

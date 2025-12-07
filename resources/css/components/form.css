@@ -1,0 +1,67 @@
+/* --- Form Input Area --- */
+.entry-form-container { 
+    background-color: var(--mint-lighter); 
+    padding: 15px 20px;
+    border-radius: 16px; 
+    margin-bottom: 15px; 
+}
+
+.main-entry-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+        "amount category date"
+        "note note button";
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+.main-entry-form input, 
+.main-entry-form select {
+    padding: 12px 15px; 
+    border-radius: 10px;
+    font-size: 1.1em; 
+    background-color: #fff; 
+    border: 1px solid #ddd;
+}
+
+.btn-add {
+    background: var(--gradient-2); 
+    color: white;
+    padding: 15px 25px; 
+    font-size: 1.1em; 
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.btn-add:hover {
+    opacity: 0.9;
+}
+
+/* Input Grid Positioning (Forms) */
+#entryAmount { grid-area: amount; }
+#entryCategory { grid-area: category; }
+#entryNote { grid-area: note; }
+#entryDate { grid-area: date; }
+
+#mainEntryForm .btn-add, 
+#incomeEntryForm .btn-add { 
+    grid-area: button;
+    align-self: center; 
+    height: 100%;
+}
+
+/* Budget Setup (Compact) */
+#budgetForm {
+    grid-template-columns: 2fr 120px 100px;
+    gap: 10px;
+}
+
+#budgetForm select, 
+#budLimit, 
+#budgetForm .btn-add {
+    padding: 10px 15px; 
+    font-size: 1em;
+}

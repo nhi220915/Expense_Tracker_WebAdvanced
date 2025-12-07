@@ -1,0 +1,56 @@
+/* --- BUDGET PROGRESS STYLING --- */
+.budget-progress-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px; 
+}
+
+.budget-item {
+    padding: 10px 0;
+    margin-bottom: 5px;
+    border-bottom: 1px dashed #eee;
+}
+
+.budget-item h4 {
+    margin-bottom: 5px; 
+    padding-bottom: 0;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 1.05em;
+    color: var(--text-color);
+}
+
+.budget-item h4 span:first-child {
+    font-weight: 600;
+}
+
+.budget-item h4 span:last-child {
+    font-weight: 700;
+    text-align: right;
+    margin-left: 10px; 
+    line-height: 1.2;
+    max-width: 50%;
+}
+
+.progress-bar-container {
+    height: 8px;
+    margin-bottom: 0;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.3s;
+}
+
+.progress-bar.green {
+    background: var(--emerald-green);
+}
+
+.progress-bar.red {
+    background: var(--warning-red);
+}
