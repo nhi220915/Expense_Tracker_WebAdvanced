@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
+use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class IncomeController extends Controller
+class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
@@ -14,68 +14,68 @@ class IncomeController extends Controller
         $selectedMonth = $request->input('month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Get incomes for selected month
-        $incomes = Income::where('user_id', $user->id)
+        // Get expenses for selected month
+        $expenses = Expense::where('user_id', $user->id)
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->orderBy('date', 'desc')
             ->get();
 
-        return view('incomes.index', compact('incomes'));
+        return view('expenses.index', compact('expenses'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01',
-            'category' => 'required|string|max:255',
+            'expense_category_id' => 'required|exists:expense_categories,id',
             'date' => 'required|date',
             'note' => 'nullable|string|max:255',
         ]);
 
-        Income::create([
+        Expense::create([
             'user_id' => Auth::id(),
+            'expense_category_id' => $validated['expense_category_id'],
             'amount' => $validated['amount'],
-            'category' => $validated['category'],
             'date' => $validated['date'],
             'note' => $validated['note'] ?? null,
         ]);
 
-        return redirect()->route('incomes.index', ['month' => substr($validated['date'], 0, 7)])
-            ->with('success', 'Income added successfully!');
+        return redirect()->route('expenses.index', ['month' => substr($validated['date'], 0, 7)])
+            ->with('success', 'Expense added successfully!');
     }
 
-    public function update(Request $request, Income $income)
+    public function update(Request $request, Expense $expense)
     {
         // Check ownership
-        if ($income->user_id !== Auth::id()) {
+        if ($expense->user_id !== Auth::id()) {
             abort(403);
         }
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01',
-            'category' => 'required|string|max:255',
+            'expense_category_id' => 'required|exists:expense_categories,id',
             'date' => 'required|date',
             'note' => 'nullable|string|max:255',
         ]);
 
-        $income->update($validated);
+        $expense->update($validated);
 
-        return redirect()->route('incomes.index', ['month' => substr($validated['date'], 0, 7)])
-            ->with('success', 'Income updated successfully!');
+        return redirect()->route('expenses.index', ['month' => substr($validated['date'], 0, 7)])
+            ->with('success', 'Expense updated successfully!');
     }
 
-    public function destroy(Income $income)
+    public function destroy(Expense $expense)
     {
         // Check ownership
-        if ($income->user_id !== Auth::id()) {
+        if ($expense->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $month = $income->date->format('Y-m');
-        $income->delete();
+        $month = $expense->date->format('Y-m');
+        $expense->delete();
 
-        return redirect()->route('incomes.index', ['month' => $month])
-            ->with('success', 'Income deleted successfully!');
+        return redirect()->route('expenses.index', ['month' => $month])
+            ->with('success', 'Expense deleted successfully!');
     }
 }

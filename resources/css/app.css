@@ -1,7 +1,3 @@
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 /* Import Components */
 @import './components/variables.css';
 @import './components/header.css';
@@ -11,6 +7,7 @@
 @import './components/list.css';
 @import './components/budget.css';
 @import './components/chart.css';
+@import './components/auth.css';
 
 /* Import Pages */
 @import './pages/expense.css';
