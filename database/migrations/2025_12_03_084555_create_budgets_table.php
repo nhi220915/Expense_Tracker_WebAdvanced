@@ -10,14 +10,26 @@ return new class extends Migration
     {
         Schema::create('budgets', function (Blueprint $table) {
             $table->id();
+
+            // User
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('category'); // Food, Transport, ...
+
+            // New: liên kết đến bảng expense_categories
+            $table->foreignId('expense_category_id')
+                ->constrained('expense_categories')
+                ->cascadeOnDelete();
+
             $table->decimal('limit', 12, 2);
+
             $table->unsignedTinyInteger('month'); // 1-12
             $table->unsignedSmallInteger('year');
+
             $table->timestamps();
 
-            $table->unique(['user_id', 'category', 'year', 'month']);
+            // Unique theo user + category + thời gian
+            $table->unique(['user_id', 'expense_category_id', 'year', 'month']);
+
+            // Index phụ
             $table->index(['user_id', 'year', 'month']);
         });
     }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\Budget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +16,19 @@ class ExpenseController extends Controller
         $selectedMonth = $request->input('month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
+        // Get expense categories for the current user
+        $expenseCategories = ExpenseCategory::where('user_id', $user->id)
+            ->orderBy('name')
+            ->get();
+
+        // Auto-create default categories if user has none
+        if ($expenseCategories->isEmpty()) {
+            $this->createDefaultCategories($user);
+            $expenseCategories = ExpenseCategory::where('user_id', $user->id)
+                ->orderBy('name')
+                ->get();
+        }
+
         // Get expenses for selected month
         $expenses = Expense::where('user_id', $user->id)
             ->whereYear('date', $year)
@@ -21,7 +36,40 @@ class ExpenseController extends Controller
             ->orderBy('date', 'desc')
             ->get();
 
-        return view('expenses.index', compact('expenses'));
+        // Get budgets for the selected month
+        $budgets = Budget::where('user_id', $user->id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->with('category')
+            ->get();
+
+        return view('expenses.index', compact('expenses', 'expenseCategories', 'budgets'));
+    }
+
+    /**
+     * Create default categories for a user
+     */
+    private function createDefaultCategories($user)
+    {
+        $defaultCategories = [
+            ['name' => 'Food', 'color' => '#00d1c1'],
+            ['name' => 'Transport', 'color' => '#27ae60'],
+            ['name' => 'Entertainment', 'color' => '#f39c12'],
+            ['name' => 'Utilities', 'color' => '#e74c3c'],
+            ['name' => 'Other', 'color' => '#00a896'],
+        ];
+
+        foreach ($defaultCategories as $category) {
+            ExpenseCategory::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'name' => $category['name'],
+                ],
+                [
+                    'color' => $category['color'],
+                ]
+            );
+        }
     }
 
     public function store(Request $request)

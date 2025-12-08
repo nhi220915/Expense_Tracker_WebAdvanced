@@ -21,5 +21,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Seed expense categories for all users
+        $this->call(ExpenseCategorySeeder::class);
     }
 }
