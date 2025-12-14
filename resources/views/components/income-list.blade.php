@@ -33,13 +33,31 @@
             @php
                 $catName = $income->category->name ?? $income->category;
             @endphp
-            <li data-category="{{ $catName }}">
+            <li data-category="{{ $catName }}" data-income-id="{{ $income->id }}">
                 <div class="transaction-name-category">
                     <span class="name">{{ $income->note ?: $catName }}</span>
                     <span class="category-badge">{{ $catName }}</span>
                 </div>
                 <span class="income-amount">+ ${{ number_format($income->amount, 2) }}</span>
                 <span class="transaction-date">{{ $income->date->format('d/m/Y') }}</span>
+                <div class="transaction-actions">
+                    <button 
+                        type="button" 
+                        class="btn-edit" 
+                        onclick="editIncome({{ $income->id }}, {{ $income->amount }}, '{{ addslashes($income->category) }}', '{{ $income->date->format('Y-m-d') }}', '{{ addslashes($income->note ?? '') }}')"
+                        title="Edit"
+                    >
+                        ✏️
+                    </button>
+                    <button 
+                        type="button" 
+                        class="btn-delete" 
+                        onclick="deleteIncome({{ $income->id }})"
+                        title="Delete"
+                    >
+                        🗑️
+                    </button>
+                </div>
             </li>
         @empty
             <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">No income found</li>
