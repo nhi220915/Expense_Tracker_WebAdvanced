@@ -1,27 +1,70 @@
-/* --- Header (Topbar) --- */
-header {
-    background-color: #ffffff; 
-    padding: 15px 40px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+/* Custom Variables (Để sử dụng màu sắc đồng bộ) */
+:root {
+    --mint-dark: #00a896;
+    --mint-lighter: #e6f7f5;
+    --text-color: #2c3e50;
+    --shadow-pro: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. Nâng cấp Container chính của Header (Thay thế .bg-white .shadow-sm) */
+.main-header {
+    background-color: #ffffff;
+    box-shadow: var(--shadow-pro);
+    position: sticky; /* Giúp header cố định khi cuộn */
+    top: 0;
+    z-index: 50; /* Đảm bảo header nằm trên nội dung chính */
+}
+
+/* 2. Cấu trúc bên trong (Tùy chỉnh để không dùng Tailwind inline) */
+.header-container {
+    max-width: 1280px; /* Tương đương max-w-7xl */
+    margin: 0 auto;
+    padding: 15px 40px; /* Tương đương px-4/sm:px-6/lg:px-8 py-4 */
     display: flex;
-    justify-content: space-between; 
     align-items: center;
+    justify-content: space-between;
 }
 
+
+/* 3. Logo (Tăng cường sự nổi bật) */
 .logo {
-    font-size: 1.7em; 
-    font-weight: 800; 
-    color: var(--mint-dark); 
+    font-size: 1.85em; /* Lớn hơn một chút */
+    font-weight: 700; /* Thay vì 800 */
+    color: var(--mint-dark);
+    letter-spacing: 0.5px;
 }
 
+/* 4. Controls (User Info và Logout) */
 .header-controls {
     display: flex;
     align-items: center;
-    gap: 20px; 
+    gap: 20px; /* Tăng khoảng cách */
 }
 
+/* 5. User Info */
 .user-info {
     font-size: 0.95em;
-    color: #555;
+    color: var(--text-color); /* Sử dụng màu chữ đồng nhất */
     font-weight: 500;
+}
+
+/* 6. Nút Logout mới (Thay thế các class Tailwind trên nút) */
+.btn-logout {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--mint-dark);
+    background-color: white;
+    color: var(--mint-dark);
+    font-size: 0.9em; /* Gọn hơn */
+}
+
+.btn-logout:hover {
+    /* Đảo ngược màu sắc khi hover */
+    background-color: var(--mint-dark);
+    color: white; 
+    border-color: var(--mint-dark); 
+    box-shadow: 0 4px 10px rgba(0, 168, 150, 0.25);
 }

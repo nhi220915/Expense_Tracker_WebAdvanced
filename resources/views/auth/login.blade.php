@@ -42,8 +42,8 @@
                 @endif
 
                 <x-primary-button>
-                    {{ __('Log in') }}
-                </x-primary-button>
+                {{ __('Log in') }}
+            </x-primary-button>
             </div>
         </div>
     </form>

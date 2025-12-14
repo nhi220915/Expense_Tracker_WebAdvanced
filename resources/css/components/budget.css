@@ -54,3 +54,57 @@
 .progress-bar.red {
     background: var(--warning-red);
 }
+
+/* --- THÊM STYLE CHO MODAL (Popup) TỪ HTML GỐC VÀO ĐÂY --- */
+
+/* Modal Overlay (Phần màn hình mờ) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Nền mờ */
+    /* display: none; đã được đặt inline trong Blade */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đảm bảo nó nằm trên tất cả */
+}
+
+/* Modal Content (Khung Popup chứa form) */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Style cho các thành phần bên trong Modal */
+.modal-content h3 {
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.modal-content label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+}
+.modal-content input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 1em;
+}
+
+/* Style cho nút Save trong Modal */
+.modal-content .btn-add {
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 10px;
+}

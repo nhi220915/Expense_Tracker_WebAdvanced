@@ -10,8 +10,16 @@ export { initExpensePage } from './pages/expense.js';
 export { initIncomePage } from './pages/income.js';
 export { initDashboardPage } from './pages/dashboard.js';
 
+import { openModal, closeModal, checkTotalPercentage, autoAdjustRemainingCategories, renderAllocationModalContent } from './components/budget-modals.js';
+
 // Make functions globally available
 window.filterTransactions = filterTransactions;
 window.openMainTab = openMainTab;
 window.formatCurrency = formatCurrency;
 window.updateDashboard = updateDashboard;
+
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.checkTotalPercentage = checkTotalPercentage;
+window.autoAdjustRemainingCategories = autoAdjustRemainingCategories;
+window.renderAllocationModalContent = renderAllocationModalContent;

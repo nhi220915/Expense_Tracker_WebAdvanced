@@ -5,41 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Expense Tracker PRO')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body>
-    <header>
-        <div class="logo">Expense Tracker PRO</div>
-        <div class="header-controls">
-            <div class="user-info">
-                Hello, {{ auth()->user()->name }}
+<body class="bg-gray-100">
+    
+    {{-- KHỐI HEADER MỚI --}}
+    <header class="main-header">
+        <div class="header-container">
+            {{-- LOGO (Sử dụng class .logo cho CSS tùy chỉnh) --}}
+            <div class="logo">TnF</div>
+            
+            <div class="header-controls">
+                {{-- USER INFO --}}
+                <div class="user-info">Hello, {{ auth()->user()->name }}</div>
+                
+                {{-- LOGOUT BUTTON (Sử dụng class .btn-logout cho CSS tùy chỉnh) --}}
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        Logout
+                    </button>
+                </form>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" style="padding: 8px 15px; background: var(--mint-dark); color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
-            </form>
         </div>
     </header>
 
-    <!-- Flash Messages -->
-    @if(session('success'))
-        <div style="background: #27ae60; color: white; padding: 15px; margin: 20px 40px; border-radius: 8px; text-align: center;">
-            {{ session('success') }}
-        </div>
-    @endif
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+        @if(session('success'))
+            <div class="rounded-lg bg-emerald-500 text-white px-4 py-3 text-sm shadow">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    @if(session('error'))
-        <div style="background: #e74c3c; color: white; padding: 15px; margin: 20px 40px; border-radius: 8px; text-align: center;">
-            {{ session('error') }}
-        </div>
-    @endif
+        @if(session('error'))
+            <div class="rounded-lg bg-warning text-white px-4 py-3 text-sm shadow">
+                {{ session('error') }}
+            </div>
+        @endif
 
-    <div class="grid-container">
         @yield('content')
-    </div>
+    </main>
 
-    @vite(['resources/js/app.js'])
+    @stack('modals')
     @stack('scripts')
 </body>
 </html>

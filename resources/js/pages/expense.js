@@ -1,10 +1,9 @@
-import { initExpenseForm, initBudgetForm } from '../components/form.js';
+import { initExpenseForm } from '../components/form.js';
 import { filterTransactions } from '../components/filter.js';
 
 export function initExpensePage() {
     // Initialize forms
     initExpenseForm();
-    initBudgetForm();
 
     // Initialize filter on page load
     document.addEventListener("DOMContentLoaded", () => {

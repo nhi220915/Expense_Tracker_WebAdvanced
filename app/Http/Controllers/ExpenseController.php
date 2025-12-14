@@ -39,7 +39,7 @@ class ExpenseController extends Controller
         // Get budgets for the selected month
         $budgets = Budget::where('user_id', $user->id)
             ->where('year', $year)
-            ->where('month', $month)
+            ->where('month', (int)$month)  // FIX: Cast to integer to match BudgetController
             ->with('category')
             ->get();
 
