@@ -10,7 +10,6 @@
 </head>
 <body class="bg-gray-100">
     
-    {{-- KHỐI HEADER MỚI --}}
     <header class="main-header">
         <div class="header-container">
             {{-- LOGO (Sử dụng class .logo cho CSS tùy chỉnh) --}}

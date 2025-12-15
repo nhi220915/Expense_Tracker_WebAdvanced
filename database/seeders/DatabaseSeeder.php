@@ -16,40 +16,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('🌱 Starting database seeding...');
+        $this->command->info('Starting database seeding...');
         $this->command->newLine();
 
         // Step 1: Create Users
-        $this->command->info('👥 Step 1: Creating users...');
+        $this->command->info('Step 1: Creating users...');
         $this->createUsers();
         $this->command->newLine();
 
         // Step 2: Create Expense Categories
-        $this->command->info('📁 Step 2: Creating expense categories...');
+        $this->command->info('Step 2: Creating expense categories...');
         $this->call(ExpenseCategorySeeder::class);
         $this->command->newLine();
 
         // Step 3: Create Incomes
-        $this->command->info('💰 Step 3: Creating incomes...');
+        $this->command->info('Step 3: Creating incomes...');
         $this->call(IncomeSeeder::class);
         $this->command->newLine();
 
         // Step 4: Create Expenses
-        $this->command->info('💸 Step 4: Creating expenses...');
+        $this->command->info('Step 4: Creating expenses...');
         $this->call(ExpenseSeeder::class);
         $this->command->newLine();
 
         // Step 5: Create Budgets
-        $this->command->info('📊 Step 5: Creating budgets...');
+        $this->command->info('Step 5: Creating budgets...');
         $this->call(BudgetSeeder::class);
         $this->command->newLine();
 
-        $this->command->info('✅ Database seeding completed successfully!');
+        $this->command->info('Database seeding completed successfully!');
         $this->command->newLine();
-        $this->command->info('📝 Test Accounts:');
-        $this->command->info('   • Admin: admin@expensetracker.com / password');
-        $this->command->info('   • User 1: john.doe@example.com / password');
-        $this->command->info('   • User 2: jane.smith@example.com / password');
+        $this->command->info('Test Accounts:');
+        $this->command->info('   Admin: admin@expensetracker.com / password');
+        $this->command->info('   User 1: john.doe@example.com / password');
+        $this->command->info('   User 2: jane.smith@example.com / password');
         $this->command->newLine();
     }
 
@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        $this->command->info('   ✓ Created admin user');
+        $this->command->info('   Created admin user');
 
         // Create test users with realistic names
         $testUsers = [
@@ -98,12 +98,12 @@ class DatabaseSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
-            $this->command->info("   ✓ Created user: {$userData['name']}");
+            $this->command->info("   Created user: {$userData['name']}");
         }
 
         // Create additional random users (5-10)
         $randomUserCount = rand(5, 10);
         User::factory()->count($randomUserCount)->create();
-        $this->command->info("   ✓ Created {$randomUserCount} random users");
+        $this->command->info("   Created {$randomUserCount} random users");
     }
 }
