@@ -59,3 +59,4 @@ class ExpenseSeeder extends Seeder
         }
     }
 }
+

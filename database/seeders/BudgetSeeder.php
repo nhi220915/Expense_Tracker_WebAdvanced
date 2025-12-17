@@ -94,3 +94,4 @@ class BudgetSeeder extends Seeder
         }
     }
 }
+

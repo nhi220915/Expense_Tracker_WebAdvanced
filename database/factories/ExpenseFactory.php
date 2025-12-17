@@ -136,3 +136,4 @@ class ExpenseFactory extends Factory
         ]);
     }
 }
+

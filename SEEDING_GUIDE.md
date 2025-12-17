@@ -171,3 +171,4 @@ Budget::count()
 -   Data is generated using Faker for realistic variety
 -   Budgets ensure 100% allocation across all categories
 -   Expenses are linked to proper categories and users
+

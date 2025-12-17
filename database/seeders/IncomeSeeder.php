@@ -60,3 +60,4 @@ class IncomeSeeder extends Seeder
         }
     }
 }
+

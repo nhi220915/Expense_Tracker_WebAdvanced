@@ -93,3 +93,4 @@ class IncomeFactory extends Factory
         ]);
     }
 }
+

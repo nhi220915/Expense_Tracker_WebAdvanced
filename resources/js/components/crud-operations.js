@@ -89,3 +89,4 @@ window.editExpense = editExpense;
 window.deleteExpense = deleteExpense;
 window.editIncome = editIncome;
 window.deleteIncome = deleteIncome;
+
