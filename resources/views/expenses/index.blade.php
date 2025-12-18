@@ -96,31 +96,13 @@
                                     $categoryName = $expense->category->name ?? $expense->category;
                                     $badgeClass = 'category-badge';
                                 @endphp
-                                <li data-category="{{ $categoryName }}" data-expense-id="{{ $expense->id }}">
+                                <li data-category="{{ $categoryName }}">
                                     <div class="transaction-name-category">
                                         <span class="name">{{ $expense->note ?: $categoryName }}</span>
                                         <span class="{{ $badgeClass }}">{{ $categoryName }}</span>
                                     </div>
                                     <span class="expense-amount">- ${{ number_format($expense->amount, 2) }}</span>
                                     <span class="transaction-date">{{ $expense->date->format('d/m/Y') }}</span>
-                                    <div class="transaction-actions">
-                                        <button 
-                                            type="button" 
-                                            class="btn-edit" 
-                                            onclick="editExpense({{ $expense->id }}, {{ $expense->amount }}, '{{ $expense->expense_category_id }}', '{{ $expense->date->format('Y-m-d') }}', '{{ addslashes($expense->note ?? '') }}', '{{ addslashes($categoryName) }}')"
-                                            title="Edit"
-                                        >
-                                            ✏️
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            class="btn-delete" 
-                                            onclick="deleteExpense({{ $expense->id }})"
-                                            title="Delete"
-                                        >
-                                            🗑️
-                                        </button>
-                                    </div>
                                 </li>
                             @empty
                                 <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">No expenses found</li>
@@ -227,84 +209,16 @@
             </form>
         </div>
     </div>
-
-    <!-- Edit Expense Modal -->
-    <div id="editExpenseModal" class="modal-overlay" style="display: none;" onclick="closeModal('editExpenseModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3>Edit Expense</h3>
-            <form id="editExpenseForm" method="POST">
-                @csrf
-                @method('PUT')
-                <label for="editExpenseAmount">Amount ($):</label>
-                <input
-                    type="number"
-                    id="editExpenseAmount"
-                    name="amount"
-                    required
-                    min="0.01"
-                    step="0.01"
-                />
-
-                <label for="editExpenseCategory">Category:</label>
-                <select name="expense_category_id" id="editExpenseCategory" required>
-                    <option value="">Select Category</option>
-                    @foreach($expenseCategories ?? [] as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-
-                <label for="editExpenseDate">Date:</label>
-                <input
-                    type="date"
-                    id="editExpenseDate"
-                    name="date"
-                    required
-                />
-
-                <label for="editExpenseNote">Note:</label>
-                <input
-                    type="text"
-                    id="editExpenseNote"
-                    name="note"
-                    placeholder="Note (e.g.: Highland Coffee)"
-                />
-
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button type="submit" class="btn-add" style="flex: 1;">Update Expense</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('editExpenseModal')" style="flex: 1;">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Expense Confirmation Modal -->
-    <div id="deleteExpenseModal" class="modal-overlay" style="display: none;" onclick="closeModal('deleteExpenseModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3>Delete Expense</h3>
-            <p>Are you sure you want to delete this expense? This action cannot be undone.</p>
-            <form id="deleteExpenseForm" method="POST">
-                @csrf
-                @method('DELETE')
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button type="submit" class="btn-delete" style="flex: 1;">Delete</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('deleteExpenseModal')" style="flex: 1;">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
 @endpush
 
 @push('scripts')
     <script type="module">
         import { initExpensePage } from '{{ Vite::asset("resources/js/app.js") }}';
         import { openModal, closeModal } from '{{ Vite::asset("resources/js/components/budget-modals.js") }}';
-        import { editExpense, deleteExpense } from '{{ Vite::asset("resources/js/components/crud-operations.js") }}';
         
         // Ensure functions are available globally
         window.openModal = openModal;
         window.closeModal = closeModal;
-        window.editExpense = editExpense;
-        window.deleteExpense = deleteExpense;
         
         initExpensePage();
     </script>

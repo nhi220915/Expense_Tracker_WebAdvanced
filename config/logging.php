@@ -82,6 +82,10 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'http' => [
+            'verify' => false,
+        ],
+
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),

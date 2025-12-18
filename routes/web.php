@@ -7,6 +7,7 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseCategoryController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -49,5 +50,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/budgets/update-limit', [BudgetController::class, 'updateLimit'])->name('budgets.update-limit');
     Route::put('/budgets/update-allocation', [BudgetController::class, 'updateAllocation'])->name('budgets.update-allocation');
 });
+
+    // Slack
+    Route::get('/test-slack', function () {
+        Log::critical('Đây là một thông báo lỗi thử nghiệm từ Laravel!');
+        return 'Đã gửi thông báo về Slack!';
+    });
+
+     // Route này sẽ kích hoạt cả Slack và Sentry cùng lúc
+    Route::get('/test-monitor', function () {
+    // 1. Gửi thông báo nhanh qua Slack
+        Log::critical('Hệ thống giám sát: Phát hiện lỗi thử nghiệm!');
+
+    // 2. Tạo lỗi thực tế để Sentry bắt được
+        throw new \Exception('Sentry Test Error: Hệ thống đã kết nối thành công!');
+    });
+    
 
 require __DIR__.'/auth.php';

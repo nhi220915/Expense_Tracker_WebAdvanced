@@ -44,38 +44,4 @@ class IncomeController extends Controller
         return redirect()->route('incomes.index', ['month' => substr($validated['date'], 0, 7)])
             ->with('success', 'Income added successfully!');
     }
-
-    public function update(Request $request, Income $income)
-    {
-        // Check ownership
-        if ($income->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'category' => 'required|string|max:255',
-            'date' => 'required|date',
-            'note' => 'nullable|string|max:255',
-        ]);
-
-        $income->update($validated);
-
-        return redirect()->route('incomes.index', ['month' => substr($validated['date'], 0, 7)])
-            ->with('success', 'Income updated successfully!');
-    }
-
-    public function destroy(Income $income)
-    {
-        // Check ownership
-        if ($income->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $month = $income->date->format('Y-m');
-        $income->delete();
-
-        return redirect()->route('incomes.index', ['month' => $month])
-            ->with('success', 'Income deleted successfully!');
-    }
 }
