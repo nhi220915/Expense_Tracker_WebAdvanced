@@ -40,6 +40,20 @@
                 </div>
                 <span class="income-amount">+ ${{ number_format($income->amount, 2) }}</span>
                 <span class="transaction-date">{{ $income->date->format('d/m/Y') }}</span>
+                <div class="transaction-actions">
+                    <button
+                        type="button"
+                        class="btn-edit"
+                        onclick="window.editIncome?.({{ $income->id }}, {{ $income->amount }}, @js($income->category), '{{ $income->date->format('Y-m-d') }}', @js($income->note ?? ''))"
+                        title="Edit"
+                    >✏️</button>
+                    <button
+                        type="button"
+                        class="btn-delete"
+                        onclick="window.deleteIncome?.({{ $income->id }})"
+                        title="Delete"
+                    >🗑️</button>
+                </div>
             </li>
         @empty
             <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">No income found</li>

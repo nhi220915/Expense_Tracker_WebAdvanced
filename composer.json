@@ -8,12 +8,14 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/pulse": "^1.4",
         "laravel/sanctum": "^4.2",
         "laravel/telescope": "^5.16",
         "laravel/tinker": "^2.10.1",
         "sentry/sentry-laravel": "^4.20"
     },
     "require-dev": {
+        "dedoc/scramble": "^0.13.8",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",

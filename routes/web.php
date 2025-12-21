@@ -8,16 +8,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseCategoryController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    if (auth()->check()) {
+    if (Auth::check()) { // Dùng Auth Facade để tránh lỗi gạch đỏ
         return redirect()->route('dashboard');
     }
     return redirect()->route('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard - Đổi name từ 'dashboard.index' thành 'dashboard'
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Expenses
@@ -34,6 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Budgets
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    Route::put('/budgets/limit', [BudgetController::class, 'updateLimit'])->name('budgets.update-limit');
+    Route::put('/budgets/allocation', [BudgetController::class, 'updateAllocation'])->name('budgets.update-allocation');
     
     // Expense Categories
     Route::post('/expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
@@ -44,27 +47,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Budgets
-    Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
-    Route::put('/budgets/update-limit', [BudgetController::class, 'updateLimit'])->name('budgets.update-limit');
-    Route::put('/budgets/update-allocation', [BudgetController::class, 'updateAllocation'])->name('budgets.update-allocation');
 });
 
-    // Slack
-    Route::get('/test-slack', function () {
-        Log::critical('Đây là một thông báo lỗi thử nghiệm từ Laravel!');
-        return 'Đã gửi thông báo về Slack!';
-    });
+// Monitor Routes (Dùng cho việc kiểm tra thủ công)
+Route::get('/test-slack', function () {
+    Log::critical('Đây là một thông báo lỗi thử nghiệm từ Laravel!');
+    return 'Đã gửi thông báo về Slack!';
+});
 
-     // Route này sẽ kích hoạt cả Slack và Sentry cùng lúc
-    Route::get('/test-monitor', function () {
-    // 1. Gửi thông báo nhanh qua Slack
-        Log::critical('Hệ thống giám sát: Phát hiện lỗi thử nghiệm!');
+Route::get('/test-monitor', function () {
+    Log::critical('Hệ thống giám sát: Phát hiện lỗi thử nghiệm!');
+    throw new \Exception('Sentry Test Error: Hệ thống đã kết nối thành công!');
+});
 
-    // 2. Tạo lỗi thực tế để Sentry bắt được
-        throw new \Exception('Sentry Test Error: Hệ thống đã kết nối thành công!');
-    });
-    
+Route::get('/test-slow-query', function () {
+    // Ép database phải chờ 2 giây mới phản hồi
+    return DB::select('SELECT SLEEP(2)'); 
+});
 
 require __DIR__.'/auth.php';

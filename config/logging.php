@@ -53,10 +53,11 @@ return [
     'channels' => [
 
         'stack' => [
-            'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
-            'ignore_exceptions' => false,
-        ],
+        'driver' => 'stack',
+        // Gộp các kênh quan trọng: ghi file hàng ngày, gửi Slack và gửi Sentry
+        'channels' => ['daily', 'slack', 'sentry'], 
+        'ignore_exceptions' => false,
+    ],
 
         'single' => [
             'driver' => 'single',
@@ -130,6 +131,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'sentry' => [
+        'driver' => 'sentry',
+    ],
+    
 
     ],
 
