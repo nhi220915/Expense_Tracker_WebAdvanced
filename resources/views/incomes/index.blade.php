@@ -5,9 +5,14 @@
 @section('content')
     <div class="grid-container">
         <div class="main-tabs">
-            <a href="{{ route('expenses.index') }}" class="main-tab-button {{ request()->routeIs('expenses.*') ? 'active' : '' }}">Spending</a>
-            <a href="{{ route('incomes.index') }}" class="main-tab-button {{ request()->routeIs('incomes.*') ? 'active' : '' }}">Income</a>
-            <a href="{{ route('dashboard') }}" class="main-tab-button {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('expenses.index') }}"
+                class="main-tab-button {{ request()->routeIs('expenses.*') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('expenses.index') }}'; return false;">Spending</a>
+            <a href="{{ route('incomes.index') }}"
+                class="main-tab-button {{ request()->routeIs('incomes.*') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('incomes.index') }}'; return false;">Income</a>
+            <a href="{{ route('dashboard') }}" class="main-tab-button {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('dashboard') }}'; return false;">Dashboard</a>
         </div>
 
         <div class="spending-content-grid" style="grid-template-columns: 1fr;">
@@ -49,7 +54,8 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button type="submit" class="btn-add" style="flex: 1;">Update Income</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('editIncomeModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('editIncomeModal')"
+                        style="flex: 1;">Cancel</button>
                 </div>
             </form>
         </div>
@@ -65,7 +71,8 @@
                 @method('DELETE')
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button type="submit" class="btn-delete" style="flex: 1;">Delete</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('deleteIncomeModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('deleteIncomeModal')"
+                        style="flex: 1;">Cancel</button>
                 </div>
             </form>
         </div>

@@ -13,9 +13,14 @@
 
     <div class="grid-container">
         <div class="main-tabs">
-            <a href="{{ route('expenses.index') }}" class="main-tab-button {{ request()->routeIs('expenses.*') ? 'active' : '' }}">Spending</a>
-            <a href="{{ route('incomes.index') }}" class="main-tab-button {{ request()->routeIs('incomes.*') ? 'active' : '' }}">Income</a>
-            <a href="{{ route('dashboard') }}" class="main-tab-button {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ route('expenses.index') }}"
+                class="main-tab-button {{ request()->routeIs('expenses.*') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('expenses.index') }}'; return false;">Spending</a>
+            <a href="{{ route('incomes.index') }}"
+                class="main-tab-button {{ request()->routeIs('incomes.*') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('incomes.index') }}'; return false;">Income</a>
+            <a href="{{ route('dashboard') }}" class="main-tab-button {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                onclick="window.location.href='{{ route('dashboard') }}'; return false;">Dashboard</a>
         </div>
 
         <div class="spending-content-grid">
@@ -23,18 +28,11 @@
                 <div class="dashboard-block">
                     <h1>📝 Enter Expense</h1>
                     <div class="entry-form-container">
-                        <form id="mainEntryForm" method="POST" action="{{ route('expenses.store') }}" class="main-entry-form">
+                        <form id="mainEntryForm" method="POST" action="{{ route('expenses.store') }}"
+                            class="main-entry-form">
                             @csrf
-                            <input
-                                type="number"
-                                name="amount"
-                                id="entryAmount"
-                                placeholder="Amount ($)"
-                                required
-                                min="0.01"
-                                step="0.01"
-                                value="{{ old('amount') }}"
-                            />
+                            <input type="number" name="amount" id="entryAmount" placeholder="Amount ($)" required min="0.01"
+                                step="0.01" value="{{ old('amount') }}" />
 
                             <select name="expense_category_id" id="entryCategory" required>
                                 <option value="">Select Category</option>
@@ -45,22 +43,11 @@
                                 @endforeach
                             </select>
 
-                            <input
-                                type="date"
-                                name="date"
-                                id="entryDate"
-                                value="{{ old('date', date('Y-m-d')) }}"
-                                required
-                            />
+                            <input type="date" name="date" id="entryDate" value="{{ old('date', date('Y-m-d')) }}"
+                                required />
 
-                            <input
-                                type="text"
-                                name="note"
-                                id="entryNote"
-                                placeholder="Note (e.g.: Highland Coffee)"
-                                value="{{ old('note') }}"
-                                class="col-span-2"
-                            />
+                            <input type="text" name="note" id="entryNote" placeholder="Note (e.g.: Highland Coffee)"
+                                value="{{ old('note') }}" class="col-span-2" />
 
                             <button type="submit" class="btn-add">Save Transaction</button>
                         </form>
@@ -71,12 +58,8 @@
                     <div class="report-section">
                         <div class="expense-filter-control">
                             <label for="monthFilterSpending">Filter by month:</label>
-                            <input
-                                type="month"
-                                id="monthFilterSpending"
-                                value="{{ request('month', date('Y-m')) }}"
-                                onchange="updateDashboard(this.value, 'Spending')"
-                            >
+                            <input type="month" id="monthFilterSpending" value="{{ request('month', date('Y-m')) }}"
+                                onchange="updateDashboard(this.value, 'Spending')">
                         </div>
 
                         <div class="expense-banner">
@@ -86,7 +69,8 @@
                         <div class="transaction-filters" id="expenseFilters">
                             <button class="filter-button active" onclick="filterTransactions('All', this)">All</button>
                             @foreach($expenseCategories ?? [] as $category)
-                                <button class="filter-button" onclick="filterTransactions('{{ $category->name }}', this)">{{ $category->name }}</button>
+                                <button class="filter-button"
+                                    onclick="filterTransactions('{{ $category->name }}', this)">{{ $category->name }}</button>
                             @endforeach
                         </div>
 
@@ -104,22 +88,16 @@
                                     <span class="expense-amount">- ${{ number_format($expense->amount, 2) }}</span>
                                     <span class="transaction-date">{{ $expense->date->format('d/m/Y') }}</span>
                                     <div class="transaction-actions">
-                                        <button
-                                            type="button"
-                                            class="btn-edit"
+                                        <button type="button" class="btn-edit"
                                             onclick="window.editExpense?.({{ $expense->id }}, {{ $expense->amount }}, {{ $expense->expense_category_id }}, '{{ $expense->date->format('Y-m-d') }}', @js($expense->note ?? ''))"
-                                            title="Edit"
-                                        >✏️</button>
-                                        <button
-                                            type="button"
-                                            class="btn-delete"
-                                            onclick="window.deleteExpense?.({{ $expense->id }})"
-                                            title="Delete"
-                                        >🗑️</button>
+                                            title="Edit">✏️</button>
+                                        <button type="button" class="btn-delete"
+                                            onclick="window.deleteExpense?.({{ $expense->id }})" title="Delete">🗑️</button>
                                     </div>
                                 </li>
                             @empty
-                                <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">No expenses found</li>
+                                <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">
+                                    No expenses found</li>
                             @endforelse
                         </ul>
                     </div>
@@ -131,7 +109,8 @@
                     <div class="report-section">
                         <h3>🎯 Monthly Budget Summary</h3>
                         <div class="budget-summary-box" id="budgetSummary">
-                            <div class="budget-summary-chart" style="background: conic-gradient(#00a896 {{ $overallPercentage }}%, #e0e0e0 0);">
+                            <div class="budget-summary-chart"
+                                style="background: conic-gradient(#00a896 {{ $overallPercentage }}%, #e0e0e0 0);">
                                 <div>{{ round($overallPercentage) }}%</div>
                             </div>
                             <div class="budget-summary-details">
@@ -140,8 +119,12 @@
                             </div>
                         </div>
                         <div class="action-links">
-                            <a class="action-link" href="#" onclick="event.preventDefault(); if(typeof window.openModal === 'function') { window.openModal('limitModal'); } else { console.error('openModal not available'); }">Change Budget Limit</a>
-                            <a class="action-link" href="#" onclick="event.preventDefault(); if(typeof window.openModal === 'function') { window.openModal('allocationModal'); } else { console.error('openModal not available'); }">Allocation (%) Setup</a>
+                            <a class="action-link" href="#"
+                                onclick="event.preventDefault(); if(typeof window.openModal === 'function') { window.openModal('limitModal'); } else { console.error('openModal not available'); }">Change
+                                Budget Limit</a>
+                            <a class="action-link" href="#"
+                                onclick="event.preventDefault(); if(typeof window.openModal === 'function') { window.openModal('allocationModal'); } else { console.error('openModal not available'); }">Allocation
+                                (%) Setup</a>
                         </div>
                     </div>
 
@@ -158,7 +141,8 @@
                                 <li class="fixed-progress-item">
                                     <h4>
                                         <span>{{ $categoryName }}</span>
-                                        <span style="color: {{ $barClass === 'red' ? '#e74c3c' : ($barClass === 'yellow' ? '#f39c12' : '#6c7a89') }};">
+                                        <span
+                                            style="color: {{ $barClass === 'red' ? '#e74c3c' : ($barClass === 'yellow' ? '#f39c12' : '#6c7a89') }};">
                                             ${{ number_format($categorySpent, 2) }} / ${{ number_format($budget->limit, 2) }}
                                         </span>
                                     </h4>
@@ -167,7 +151,8 @@
                                     </div>
                                 </li>
                             @empty
-                                <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">No budgets set yet</li>
+                                <li class="user-status" style="display: list-item; font-weight: 500; color: var(--text-color);">
+                                    No budgets set yet</li>
                             @endforelse
                         </ul>
                     </div>
@@ -187,15 +172,8 @@
                 @csrf
                 @method('PUT')
                 <label for="overallLimit">New Total Limit ($):</label>
-                <input
-                    type="number"
-                    id="overallLimit"
-                    name="overall_limit"
-                    value="{{ $totalLimit }}"
-                    min="100"
-                    step="10"
-                    required
-                />
+                <input type="number" id="overallLimit" name="overall_limit" value="{{ $totalLimit }}" min="100" step="10"
+                    required />
                 <input type="hidden" name="month" value="{{ request('month', date('Y-m')) }}">
                 <button type="submit" class="btn-add" style="width: 100%; border-radius: 8px">
                     Save Limit
@@ -250,7 +228,8 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button type="submit" class="btn-add" style="flex: 1;">Update Expense</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('editExpenseModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('editExpenseModal')"
+                        style="flex: 1;">Cancel</button>
                 </div>
             </form>
         </div>
@@ -266,7 +245,8 @@
                 @method('DELETE')
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button type="submit" class="btn-delete" style="flex: 1;">Delete</button>
-                    <button type="button" class="btn-cancel" onclick="closeModal('deleteExpenseModal')" style="flex: 1;">Cancel</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('deleteExpenseModal')"
+                        style="flex: 1;">Cancel</button>
                 </div>
             </form>
         </div>
@@ -278,11 +258,11 @@
         import { initExpensePage } from '{{ Vite::asset("resources/js/app.js") }}';
         import { openModal, closeModal } from '{{ Vite::asset("resources/js/components/budget-modals.js") }}';
         import { initExpenseCrud } from '{{ Vite::asset("resources/js/pages/expense-crud.js") }}';
-        
+
         // Ensure functions are available globally
         window.openModal = openModal;
         window.closeModal = closeModal;
-        
+
         initExpensePage();
         initExpenseCrud();
     </script>

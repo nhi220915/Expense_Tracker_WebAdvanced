@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         DB::listen(function (QueryExecuted $query) {
-            // Nếu query chạy lâu hơn 500ms
+            // Chỉ log nếu query chậm hơn 500ms
             if ($query->time > 500) {
                 Log::warning('Phát hiện Slow Query!', [
                     'sql' => $query->sql,

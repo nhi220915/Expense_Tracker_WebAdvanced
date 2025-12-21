@@ -1,4 +1,6 @@
 import './bootstrap';
+import './components/navigation-fix.js';
+
 
 // Import components
 import { filterTransactions } from './components/filter.js';
