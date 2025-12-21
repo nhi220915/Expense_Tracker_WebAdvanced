@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BudgetResource;
 use App\Models\Budget;
 use App\Services\BudgetService;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -28,7 +29,10 @@ class BudgetController extends Controller
         $month = $request->query('month', date('Y-m'));
         [$year, $monthNum] = explode('-', $month);
 
-        $budgets = $this->budgetService->listForUserByMonth($user, (int) $year, (int) $monthNum);
+        // Cache the budgets list for 1 hour
+        $budgets = CacheService::cacheBudgets($user, (int) $year, (int) $monthNum, function () use ($user, $year, $monthNum) {
+            return $this->budgetService->listForUserByMonth($user, (int) $year, (int) $monthNum);
+        });
 
         return BudgetResource::collection($budgets);
     }
@@ -42,6 +46,10 @@ class BudgetController extends Controller
             $validated = $request->validate(BudgetService::validationRules());
 
             $budget = $this->budgetService->createOrUpdate($request->user(), $validated);
+
+            // Invalidate cache for the budget month
+            [$year, $month] = explode('-', $validated['month']);
+            CacheService::invalidateBudgetsCache($request->user(), (int) $year, (int) $month);
 
             return response()->json([
                 'message' => 'Budget created/updated successfully',
@@ -93,6 +101,9 @@ class BudgetController extends Controller
                 (int) $month
             );
 
+            // Invalidate cache for the budget month
+            CacheService::invalidateBudgetsCache($request->user(), (int) $year, (int) $month);
+
             return response()->json([
                 'message' => 'Budget limit updated successfully'
             ]);
@@ -119,6 +130,9 @@ class BudgetController extends Controller
                 (int) $year,
                 (int) $month
             );
+
+            // Invalidate cache for the budget month
+            CacheService::invalidateBudgetsCache($request->user(), (int) $year, (int) $month);
 
             return response()->json([
                 'message' => 'Budget allocation updated successfully'

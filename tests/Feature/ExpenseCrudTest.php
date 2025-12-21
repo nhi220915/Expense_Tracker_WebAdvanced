@@ -26,7 +26,7 @@ class ExpenseCrudTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        
+
         $category = ExpenseCategory::factory()->create([
             'user_id' => $user->id,
             'name' => 'Food',
@@ -55,7 +55,7 @@ class ExpenseCrudTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        
+
         $category = ExpenseCategory::factory()->create(['user_id' => $user->id]);
         $expense = Expense::factory()->create([
             'user_id' => $user->id,
@@ -89,7 +89,7 @@ class ExpenseCrudTest extends TestCase
         $owner = User::factory()->create();
         /** @var User $other */
         $other = User::factory()->create();
-        
+
         $category = ExpenseCategory::factory()->create(['user_id' => $owner->id]);
         $expense = Expense::factory()->create([
             'user_id' => $owner->id,
@@ -109,7 +109,7 @@ class ExpenseCrudTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        
+
         $category = ExpenseCategory::factory()->create(['user_id' => $user->id]);
         $expense = Expense::factory()->create([
             'user_id' => $user->id,
@@ -124,5 +124,45 @@ class ExpenseCrudTest extends TestCase
         $this->assertDatabaseMissing('expenses', [
             'id' => $expense->id,
         ]);
+    }
+    public function test_user_cannot_create_expense_with_invalid_data(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('expenses.store'), [
+                'amount' => 'not-a-number',
+                'expense_category_id' => 9999, // Non-existent
+                'date' => 'invalid-date',
+            ])
+            ->assertSessionHasErrors(['amount', 'expense_category_id', 'date']);
+    }
+
+    public function test_user_can_view_expenses_filtered_by_month(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $category = ExpenseCategory::factory()->create(['user_id' => $user->id]);
+
+        // Expense in Nov
+        Expense::factory()->create([
+            'user_id' => $user->id,
+            'expense_category_id' => $category->id,
+            'date' => '2025-11-15'
+        ]);
+
+        // Expense in Dec
+        Expense::factory()->create([
+            'user_id' => $user->id,
+            'expense_category_id' => $category->id,
+            'date' => '2025-12-15'
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('expenses.index', ['month' => '2025-11']))
+            ->assertOk()
+            ->assertSee('2025-11-15')
+            ->assertDontSee('2025-12-15');
     }
 }

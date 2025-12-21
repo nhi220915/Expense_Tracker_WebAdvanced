@@ -15,21 +15,13 @@ class ExpenseCategoryFactory extends Factory
 
     public function definition(): array
     {
-        $palette = [
-            'Food' => '#00d1c1',
-            'Transport' => '#27ae60',
-            'Entertainment' => '#f39c12',
-            'Utilities' => '#e74c3c',
-            'Other' => '#00a896',
-        ];
-
-        $name = $this->faker->randomElement(array_keys($palette));
+        // Use unique name to avoid Duplicate Entry in tests
+        $name = $this->faker->unique()->word . ' ' . $this->faker->unique()->randomNumber(5);
 
         return [
             'user_id' => User::factory(),
             'name' => $name,
-            'color' => $palette[$name] ?? '#cccccc',
+            'color' => $this->faker->hexColor(),
         ];
     }
 }
-

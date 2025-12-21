@@ -255,9 +255,8 @@
 
 @push('scripts')
     <script type="module">
-        import { initExpensePage } from '{{ Vite::asset("resources/js/app.js") }}';
-        import { openModal, closeModal } from '{{ Vite::asset("resources/js/components/budget-modals.js") }}';
-        import { initExpenseCrud } from '{{ Vite::asset("resources/js/pages/expense-crud.js") }}';
+        import { initExpensePage, initExpenseCrud } from '{{ Vite::asset("resources/js/app.js") }}';
+        import { openModal, closeModal } from '{{ Vite::asset("resources/js/app.js") }}';
 
         // Ensure functions are available globally
         window.openModal = openModal;

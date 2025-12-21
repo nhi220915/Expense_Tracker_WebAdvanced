@@ -32,13 +32,20 @@
 
 @push('scripts')
     <script type="module">
-        import { initDashboardPage } from '{{ Vite::asset("resources/js/app.js") }}';
+        import '{{ Vite::asset("resources/js/app.js") }}';
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const expenseData = @json($expenseByCategory ?? []);
+            const incomeData = @json($incomeByCategory ?? []);
+            const totalExpense = {{ $totalExpense ?? 0 }};
+            const totalIncome = {{ $totalIncome ?? 0 }};
 
-        const expenseData = @json($expenseByCategory ?? []);
-        const incomeData = @json($incomeByCategory ?? []);
-        const totalExpense = {{ $totalExpense ?? 0 }};
-        const totalIncome = {{ $totalIncome ?? 0 }};
-
-        initDashboardPage(expenseData, incomeData, totalExpense, totalIncome);
+            if (typeof window.initDashboardPage === 'function') {
+                window.initDashboardPage(expenseData, incomeData, totalExpense, totalIncome);
+            } else {
+                console.error('initDashboardPage is not available on window');
+            }
+        });
     </script>
 @endpush

@@ -1,12 +1,11 @@
 import { renderExpenseChart, renderIncomeChart } from '../components/chart.js';
 
 export function initDashboardPage(expenseData, incomeData, totalExpense, totalIncome) {
-    // Render charts if data is available
-    if (expenseData && totalExpense > 0) {
-        renderExpenseChart(expenseData, totalExpense);
-    }
+    console.log('Dashboard init:', { expenseData, incomeData, totalExpense, totalIncome });
 
-    if (incomeData && totalIncome > 0) {
-        renderIncomeChart(incomeData, totalIncome);
-    }
+    // Always try to render expense chart
+    renderExpenseChart(expenseData || {}, totalExpense || 0);
+
+    // Always try to render income chart
+    renderIncomeChart(incomeData || {}, totalIncome || 0);
 }

@@ -81,9 +81,8 @@
 
 @push('scripts')
     <script type="module">
-        import { initIncomePage } from '{{ Vite::asset("resources/js/app.js") }}';
-        import { openModal, closeModal } from '{{ Vite::asset("resources/js/components/budget-modals.js") }}';
-        import { initIncomeCrud } from '{{ Vite::asset("resources/js/pages/income-crud.js") }}';
+        import { initIncomePage, initIncomeCrud } from '{{ Vite::asset("resources/js/app.js") }}';
+        import { openModal, closeModal } from '{{ Vite::asset("resources/js/app.js") }}';
 
         window.openModal = openModal;
         window.closeModal = closeModal;

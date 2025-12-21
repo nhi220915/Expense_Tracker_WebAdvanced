@@ -46,8 +46,11 @@ class IncomeController extends Controller
 
             return redirect()->route('incomes.index', ['month' => substr($validated['date'], 0, 7)])
                 ->with('success', 'Income updated successfully!');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            // Re-throw HTTP exceptions (like 403) as-is
+            throw $e;
         } catch (\Exception $e) {
-            abort($e->getCode() === 403 ? 403 : 500, $e->getMessage());
+            abort(500, $e->getMessage());
         }
     }
 
@@ -58,8 +61,11 @@ class IncomeController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Income deleted successfully!');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            // Re-throw HTTP exceptions (like 403) as-is
+            throw $e;
         } catch (\Exception $e) {
-            abort($e->getCode() === 403 ? 403 : 500, $e->getMessage());
+            abort(500, $e->getMessage());
         }
     }
 }

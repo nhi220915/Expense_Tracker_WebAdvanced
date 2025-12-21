@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Register cache headers middleware with alias
+        $middleware->alias([
+            'cache.headers' => \App\Http\Middleware\AddCacheHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);

@@ -24,7 +24,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes - Require authentication via Sanctum
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'cache.headers:api'])->group(function () {
 
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -37,17 +37,17 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Expense routes
-    Route::apiResource('expenses', ExpenseController::class);
+    Route::apiResource('expenses', ExpenseController::class, ['as' => 'api']);
 
     // Income routes  
-    Route::apiResource('incomes', IncomeController::class);
+    Route::apiResource('incomes', IncomeController::class, ['as' => 'api']);
 
     // Budget routes
-    Route::apiResource('budgets', BudgetController::class);
-    Route::put('/budgets/update-limit', [BudgetController::class, 'updateLimit']);
-    Route::put('/budgets/update-allocation', [BudgetController::class, 'updateAllocation']);
+    Route::apiResource('budgets', BudgetController::class, ['as' => 'api']);
+    Route::put('/budgets/update-limit', [BudgetController::class, 'updateLimit'])->name('api.budgets.update-limit');
+    Route::put('/budgets/update-allocation', [BudgetController::class, 'updateAllocation'])->name('api.budgets.update-allocation');
 
     // Expense Category routes
-    Route::apiResource('expense-categories', ExpenseCategoryController::class);
+    Route::apiResource('expense-categories', ExpenseCategoryController::class, ['as' => 'api']);
 });
 

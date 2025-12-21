@@ -71,8 +71,11 @@ class ExpenseController extends Controller
 
             return redirect()->route('expenses.index', ['month' => substr($validated['date'], 0, 7)])
                 ->with('success', 'Expense updated successfully!');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            // Re-throw HTTP exceptions (like 403) as-is
+            throw $e;
         } catch (\Exception $e) {
-            abort($e->getCode() === 403 ? 403 : 500, $e->getMessage());
+            abort(500, $e->getMessage());
         }
     }
 
@@ -85,8 +88,11 @@ class ExpenseController extends Controller
 
             return redirect()->route('expenses.index', ['month' => $month])
                 ->with('success', 'Expense deleted successfully!');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            // Re-throw HTTP exceptions (like 403) as-is
+            throw $e;
         } catch (\Exception $e) {
-            abort($e->getCode() === 403 ? 403 : 500, $e->getMessage());
+            abort(500, $e->getMessage());
         }
     }
 }

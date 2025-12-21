@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Expense;
 use App\Services\ExpenseService;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -28,9 +29,12 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $month = $request->query('month'); // Optional: YYYY-MM format
+        $month = $request->query('month') ?? date('Y-m');
 
-        $expenses = $this->expenseService->listForUserByMonth($user, $month ?? date('Y-m'));
+        // Cache the expenses list for 5 minutes
+        $expenses = CacheService::cacheExpenses($user, $month, function () use ($user, $month) {
+            return $this->expenseService->listForUserByMonth($user, $month);
+        });
 
         return ExpenseResource::collection($expenses);
     }
@@ -47,6 +51,10 @@ class ExpenseController extends Controller
             $validated = $request->validate(ExpenseService::validationRules());
 
             $expense = $this->expenseService->create($request->user(), $validated);
+
+            // Invalidate cache for the expense month
+            $expenseMonth = date('Y-m', strtotime($validated['date']));
+            CacheService::invalidateExpensesCache($request->user(), $expenseMonth);
 
             return response()->json([
                 'message' => 'Expense created successfully',
@@ -99,6 +107,10 @@ class ExpenseController extends Controller
 
             $expense = $this->expenseService->update($request->user(), $expense, $validated);
 
+            // Invalidate cache for the expense month
+            $expenseMonth = date('Y-m', strtotime($validated['date']));
+            CacheService::invalidateExpensesCache($request->user(), $expenseMonth);
+
             return response()->json([
                 'message' => 'Expense updated successfully',
                 'data' => new ExpenseResource($expense->load('category'))
@@ -121,7 +133,13 @@ class ExpenseController extends Controller
     public function destroy(Request $request, Expense $expense): JsonResponse
     {
         try {
+            // Get the expense date before deletion
+            $expenseMonth = date('Y-m', strtotime($expense->date));
+
             $this->expenseService->delete($request->user(), $expense);
+
+            // Invalidate cache for the expense month
+            CacheService::invalidateExpensesCache($request->user(), $expenseMonth);
 
             return response()->json([
                 'message' => 'Expense deleted successfully'
