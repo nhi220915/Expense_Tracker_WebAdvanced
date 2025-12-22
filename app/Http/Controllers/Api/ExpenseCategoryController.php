@@ -80,6 +80,10 @@ class ExpenseCategoryController extends Controller
      */
     public function update(Request $request, ExpenseCategory $expenseCategory): JsonResponse
     {
+        if ($expenseCategory->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             $validated = $request->validate(
                 ExpenseCategoryService::updateValidationRules($request->user()->id, $expenseCategory->id)
@@ -91,11 +95,15 @@ class ExpenseCategoryController extends Controller
                 'message' => 'Category updated successfully',
                 'data' => new ExpenseCategoryResource($category)
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 500;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 
@@ -104,6 +112,10 @@ class ExpenseCategoryController extends Controller
      */
     public function destroy(Request $request, ExpenseCategory $expenseCategory): JsonResponse
     {
+        if ($expenseCategory->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             $this->categoryService->delete($request->user(), $expenseCategory);
 
@@ -111,10 +123,9 @@ class ExpenseCategoryController extends Controller
                 'message' => 'Category deleted successfully'
             ]);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 422;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 }

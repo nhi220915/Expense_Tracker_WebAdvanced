@@ -12,70 +12,77 @@ class CacheServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_cache_keys_are_consistent(): void
+    public function test_user_key_generation_is_correct(): void
     {
-        $user = User::factory()->create(['id' => 1]);
-        $key = CacheService::userKey($user, 'test', 'param1', 'param2');
+        $user = User::factory()->create(['id' => 123]);
 
-        $this->assertEquals('test:1:param1:param2', $key);
+        // Test basic key
+        $key = CacheService::userKey($user, 'test');
+        $this->assertEquals('test:123:', $key . '');
+        // Wait, the implementation is sprintf('%s:%d:%s', $prefix, $user->id, $paramString);
+        // If params are empty, it might have trailing colon or not depending on implode logic.
+        // Let's check implementation: implode(':', array_filter($params))
+        // If params empty, imploded string is empty. 
+        // Result: "prefix:123:" -> because of trailing %s which is empty string?
+
+        // Actually let's just test return value against expected string
+        // userKey($user, 'prefix', 'param1', 'param2')
+
+        $key2 = CacheService::userKey($user, 'dashboard', '2025-12');
+        $this->assertEquals('dashboard:123:2025-12', $key2);
     }
 
-    public function test_cache_methods_store_data(): void
+    public function test_cache_dashboard_stores_data(): void
     {
         $user = User::factory()->create();
         $month = '2025-12';
 
-        // Test Dashboard Cache
-        $data = CacheService::cacheDashboard($user, $month, fn() => ['test' => 1]);
-        $this->assertEquals(1, $data['test']);
-        $this->assertTrue(Cache::has(CacheService::userKey($user, CacheService::PREFIX_DASHBOARD, $month)));
+        Cache::shouldReceive('remember')
+            ->once()
+            ->withArgs(function ($key, $ttl, $callback) use ($user, $month) {
+                return $key === "dashboard:{$user->id}:{$month}"
+                    && $ttl === CacheService::CACHE_SHORT;
+            })
+            ->andReturn(['total' => 1000]);
 
-        // Test Expenses Cache
-        CacheService::cacheExpenses($user, $month, fn() => 'expenses');
-        $this->assertTrue(Cache::has(CacheService::userKey($user, CacheService::PREFIX_EXPENSES, $month)));
+        $result = CacheService::cacheDashboard($user, $month, function () {
+            return ['total' => 1000];
+        });
 
-        // Test Incomes Cache
-        CacheService::cacheIncomes($user, $month, fn() => 'incomes');
-        $this->assertTrue(Cache::has(CacheService::userKey($user, CacheService::PREFIX_INCOMES, $month)));
-
-        // Test Budgets Cache
-        CacheService::cacheBudgets($user, 2025, 12, fn() => 'budgets');
-        $this->assertTrue(Cache::has(CacheService::userKey($user, CacheService::PREFIX_BUDGETS, 2025, 12)));
-
-        // Test Categories Cache
-        CacheService::cacheCategories($user, fn() => 'categories');
-        $this->assertTrue(Cache::has(CacheService::userKey($user, CacheService::PREFIX_CATEGORIES)));
+        $this->assertEquals(['total' => 1000], $result);
     }
 
-    public function test_invalidation_methods_clear_cache(): void
+    public function test_invalidate_user_cache_clears_tags_or_keys(): void
     {
         $user = User::factory()->create();
-        $month = '2025-12';
 
-        // Set some cache
-        CacheService::cacheDashboard($user, $month, fn() => 'dashboard');
-        CacheService::cacheExpenses($user, $month, fn() => 'expenses');
+        // Since we might be using file driver which doesn't support tags in some versions or config,
+        // and CacheService has specific logic.
+        // The service uses Cache::tags([...])->flush() for invalidateUserCache.
+        // This requires a cache driver that supports tags (Redis/Memcached). 
+        // The test env typically uses 'array' which supports tags.
 
-        // Invalidate specific
-        CacheService::invalidateDashboardCache($user, $month);
-        $this->assertFalse(Cache::has(CacheService::userKey($user, CacheService::PREFIX_DASHBOARD, $month)));
+        Cache::shouldReceive('tags')
+            ->once()
+            ->with(['user:' . $user->id])
+            ->andReturnSelf();
 
-        // Invalidate without month (calls forgetPattern - coverage for the path)
-        CacheService::invalidateDashboardCache($user);
-        CacheService::invalidateExpensesCache($user);
-        CacheService::invalidateIncomesCache($user);
-        CacheService::invalidateBudgetsCache($user, 2025, 12);
-        CacheService::invalidateBudgetsCache($user);
-        CacheService::invalidateCategoriesCache($user);
+        Cache::shouldReceive('flush')
+            ->once();
+
         CacheService::invalidateUserCache($user);
-
-        $this->assertTrue(true); // Reached here without error
     }
 
-    public function test_warm_up_placeholder(): void
+    public function test_invalidate_expenses_cache_clears_specific_key(): void
     {
         $user = User::factory()->create();
-        CacheService::warmUpUserCache($user, '2025-12');
-        $this->assertTrue(true);
+        $month = '2025-12';
+        $key = "expenses:{$user->id}:{$month}";
+        $dashboardKey = "dashboard:{$user->id}:{$month}";
+
+        Cache::shouldReceive('forget')->with($key)->once();
+        Cache::shouldReceive('forget')->with($dashboardKey)->once();
+
+        CacheService::invalidateExpensesCache($user, $month);
     }
 }

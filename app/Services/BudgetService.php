@@ -172,7 +172,7 @@ class BudgetService
     {
         return [
             'overall_limit' => 'required|numeric|min:100',
-            'month' => 'required|string',
+            'month' => 'required|string|date_format:Y-m',
         ];
     }
 
@@ -183,7 +183,7 @@ class BudgetService
     {
         return [
             'percentages' => 'required|array',
-            'month' => 'required|string',
+            'month' => 'required|string|date_format:Y-m',
         ];
     }
 }

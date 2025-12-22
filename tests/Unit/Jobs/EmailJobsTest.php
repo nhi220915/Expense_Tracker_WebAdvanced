@@ -35,7 +35,7 @@ class EmailJobsTest extends TestCase
         $job = new SendBudgetWarningEmailJob($user, $budget, 85.5);
         $job->handle();
 
-        Mail::assertSent(BudgetWarningMail::class);
+        Mail::assertQueued(BudgetWarningMail::class);
     }
 
     public function test_monthly_expense_summary_job_execution(): void
@@ -54,7 +54,7 @@ class EmailJobsTest extends TestCase
         $job = new SendMonthlyExpenseSummaryJob($user);
         $job->handle();
 
-        Mail::assertSent(MonthlyExpenseSummaryMail::class);
+        Mail::assertQueued(MonthlyExpenseSummaryMail::class);
     }
 
     public function test_missing_expense_reminder_job_execution(): void
@@ -66,7 +66,7 @@ class EmailJobsTest extends TestCase
         $job = new SendMissingExpenseReminderJob($user, 3);
         $job->handle();
 
-        Mail::assertSent(MissingExpenseReminderMail::class);
+        Mail::assertQueued(MissingExpenseReminderMail::class);
     }
 
     public function test_jobs_configuration(): void

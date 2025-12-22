@@ -102,6 +102,10 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, Expense $expense): JsonResponse
     {
+        if ($expense->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             $validated = $request->validate(ExpenseService::validationRules());
 
@@ -115,11 +119,15 @@ class ExpenseController extends Controller
                 'message' => 'Expense updated successfully',
                 'data' => new ExpenseResource($expense->load('category'))
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 500;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 
@@ -132,6 +140,10 @@ class ExpenseController extends Controller
      */
     public function destroy(Request $request, Expense $expense): JsonResponse
     {
+        if ($expense->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             // Get the expense date before deletion
             $expenseMonth = date('Y-m', strtotime($expense->date));
@@ -145,10 +157,9 @@ class ExpenseController extends Controller
                 'message' => 'Expense deleted successfully'
             ]);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 500;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 }

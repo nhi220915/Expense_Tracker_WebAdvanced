@@ -29,6 +29,10 @@ class ExpenseCategoryController extends Controller
 
     public function update(Request $request, ExpenseCategory $expenseCategory)
     {
+        if ($expenseCategory->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $validated = $request->validate(
             ExpenseCategoryService::updateValidationRules(Auth::id(), $expenseCategory->id)
         );
@@ -38,12 +42,16 @@ class ExpenseCategoryController extends Controller
 
             return redirect()->back()->with('success', 'Category updated successfully!');
         } catch (\Exception $e) {
-            abort($e->getCode() === 403 ? 403 : 500, $e->getMessage());
+            abort(500, $e->getMessage());
         }
     }
 
     public function destroy(ExpenseCategory $expenseCategory)
     {
+        if ($expenseCategory->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         try {
             $this->categoryService->delete(Auth::user(), $expenseCategory);
 

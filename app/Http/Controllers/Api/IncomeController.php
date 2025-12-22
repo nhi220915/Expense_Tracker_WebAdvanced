@@ -88,6 +88,10 @@ class IncomeController extends Controller
      */
     public function update(Request $request, Income $income): JsonResponse
     {
+        if ($income->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             $validated = $request->validate(IncomeService::validationRules());
 
@@ -101,11 +105,15 @@ class IncomeController extends Controller
                 'message' => 'Income updated successfully',
                 'data' => new IncomeResource($income)
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 500;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 
@@ -114,6 +122,10 @@ class IncomeController extends Controller
      */
     public function destroy(Request $request, Income $income): JsonResponse
     {
+        if ($income->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         try {
             // Get the income date before deletion
             $incomeMonth = date('Y-m', strtotime($income->date));
@@ -127,10 +139,9 @@ class IncomeController extends Controller
                 'message' => 'Income deleted successfully'
             ]);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() === 403 ? 403 : 500;
             return response()->json([
                 'message' => $e->getMessage()
-            ], $statusCode);
+            ], 500);
         }
     }
 }

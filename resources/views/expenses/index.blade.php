@@ -255,14 +255,8 @@
 
 @push('scripts')
     <script type="module">
-        import { initExpensePage, initExpenseCrud } from '{{ Vite::asset("resources/js/app.js") }}';
-        import { openModal, closeModal } from '{{ Vite::asset("resources/js/app.js") }}';
-
-        // Ensure functions are available globally
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-
-        initExpensePage();
-        initExpenseCrud();
+        // Init functions are now globally available from app.js
+        if (typeof window.initExpensePage === 'function') window.initExpensePage();
+        if (typeof window.initExpenseCrud === 'function') window.initExpenseCrud();
     </script>
 @endpush

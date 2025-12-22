@@ -81,14 +81,9 @@
 
 @push('scripts')
     <script type="module">
-        import { initIncomePage, initIncomeCrud } from '{{ Vite::asset("resources/js/app.js") }}';
-        import { openModal, closeModal } from '{{ Vite::asset("resources/js/app.js") }}';
-
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-
-        initIncomePage();
-        initIncomeCrud();
+        // Init functions are now globally available from app.js
+        if (typeof window.initIncomePage === 'function') window.initIncomePage();
+        if (typeof window.initIncomeCrud === 'function') window.initIncomeCrud();
 
         const incomeFilterButtons = document.querySelectorAll('#incomeFilters .filter-button');
         const incomeItems = document.querySelectorAll('#recentIncomeList li');

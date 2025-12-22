@@ -8,11 +8,17 @@ import { openMainTab } from './components/tabs.js';
 import { formatCurrency, updateDashboard } from './components/utils.js';
 
 // Import pages (sẽ được gọi từ Blade templates)
-export { initExpensePage } from './pages/expense.js';
-export { initIncomePage } from './pages/income.js';
-export { initDashboardPage } from './pages/dashboard.js';
-export { initExpenseCrud } from './pages/expense-crud.js';
-export { initIncomeCrud } from './pages/income-crud.js';
+import { initExpensePage } from './pages/expense.js';
+import { initIncomePage } from './pages/income.js';
+import { initExpenseCrud } from './pages/expense-crud.js';
+import { initIncomeCrud } from './pages/income-crud.js';
+
+window.initExpensePage = initExpensePage;
+window.initIncomePage = initIncomePage;
+window.initExpenseCrud = initExpenseCrud;
+window.initIncomeCrud = initIncomeCrud;
+
+export { initExpensePage, initIncomePage, initExpenseCrud, initIncomeCrud };
 
 import { openModal, closeModal, checkTotalPercentage, autoAdjustRemainingCategories, renderAllocationModalContent } from './components/budget-modals.js';
 import { initDashboardPage } from './pages/dashboard.js';

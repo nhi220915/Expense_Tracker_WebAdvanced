@@ -64,4 +64,29 @@ class BudgetFeatureTest extends TestCase
             ])
             ->assertSessionHasErrors();
     }
+
+    public function test_update_limit_handles_service_exception(): void
+    {
+        $user = User::factory()->create();
+
+        // Mock the service to throw an exception
+        $this->mock(\App\Services\BudgetService::class, function ($mock) {
+            $mock->shouldReceive('updateOverallLimit')
+                ->andThrow(new \Exception('Simulated Service Error'));
+            // We need to mock validationRules too or ensure they pass
+            $mock->shouldReceive('updateLimitValidationRules')
+                ->andReturn([
+                    'overall_limit' => 'required|numeric',
+                    'month' => 'required|string',
+                ]);
+        });
+
+        $this->actingAs($user)
+            ->put(route('budgets.update-limit'), [
+                'overall_limit' => 5000,
+                'month' => '2025-12',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('error', 'Simulated Service Error');
+    }
 }

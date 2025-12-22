@@ -43,9 +43,9 @@ Route::middleware(['auth:sanctum', 'cache.headers:api'])->group(function () {
     Route::apiResource('incomes', IncomeController::class, ['as' => 'api']);
 
     // Budget routes
-    Route::apiResource('budgets', BudgetController::class, ['as' => 'api']);
     Route::put('/budgets/update-limit', [BudgetController::class, 'updateLimit'])->name('api.budgets.update-limit');
     Route::put('/budgets/update-allocation', [BudgetController::class, 'updateAllocation'])->name('api.budgets.update-allocation');
+    Route::apiResource('budgets', BudgetController::class, ['as' => 'api']);
 
     // Expense Category routes
     Route::apiResource('expense-categories', ExpenseCategoryController::class, ['as' => 'api']);

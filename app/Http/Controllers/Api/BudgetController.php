@@ -48,8 +48,7 @@ class BudgetController extends Controller
             $budget = $this->budgetService->createOrUpdate($request->user(), $validated);
 
             // Invalidate cache for the budget month
-            [$year, $month] = explode('-', $validated['month']);
-            CacheService::invalidateBudgetsCache($request->user(), (int) $year, (int) $month);
+            CacheService::invalidateBudgetsCache($request->user(), (int) $validated['year'], (int) $validated['month']);
 
             return response()->json([
                 'message' => 'Budget created/updated successfully',
@@ -107,6 +106,11 @@ class BudgetController extends Controller
             return response()->json([
                 'message' => 'Budget limit updated successfully'
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
@@ -137,10 +141,15 @@ class BudgetController extends Controller
             return response()->json([
                 'message' => 'Budget allocation updated successfully'
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ], 400);
+            ], 500);
         }
     }
 
@@ -149,14 +158,13 @@ class BudgetController extends Controller
      */
     public function update(Request $request, Budget $budget): JsonResponse
     {
-        try {
-            // Check ownership
-            if ($budget->user_id !== $request->user()->id) {
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 403);
-            }
+        if ($budget->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
 
+        try {
             $validated = $request->validate([
                 'limit' => 'required|numeric|min:1',
             ]);
@@ -167,6 +175,11 @@ class BudgetController extends Controller
                 'message' => 'Budget updated successfully',
                 'data' => new BudgetResource($budget->load('category'))
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
@@ -179,13 +192,13 @@ class BudgetController extends Controller
      */
     public function destroy(Request $request, Budget $budget): JsonResponse
     {
-        try {
-            if ($budget->user_id !== $request->user()->id) {
-                return response()->json([
-                    'message' => 'Unauthorized'
-                ], 403);
-            }
+        if ($budget->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
 
+        try {
             $budget->delete();
 
             return response()->json([

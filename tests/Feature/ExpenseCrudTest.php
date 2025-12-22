@@ -139,6 +139,29 @@ class ExpenseCrudTest extends TestCase
             ->assertSessionHasErrors(['amount', 'expense_category_id', 'date']);
     }
 
+    public function test_unauthenticated_user_cannot_view_expenses(): void
+    {
+        $this->get(route('expenses.index'))
+            ->assertRedirect(route('login'));
+    }
+
+    public function test_user_cannot_delete_others_expense(): void
+    {
+        $owner = User::factory()->create();
+        $other = User::factory()->create();
+        $category = ExpenseCategory::factory()->create(['user_id' => $owner->id]);
+        $expense = Expense::factory()->create([
+            'user_id' => $owner->id,
+            'expense_category_id' => $category->id,
+        ]);
+
+        $this->actingAs($other)
+            ->delete(route('expenses.destroy', $expense))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('expenses', ['id' => $expense->id]);
+    }
+
     public function test_user_can_view_expenses_filtered_by_month(): void
     {
         /** @var User $user */

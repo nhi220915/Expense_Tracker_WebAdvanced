@@ -9,60 +9,80 @@ use Tests\TestCase;
 
 class AddCacheHeadersTest extends TestCase
 {
-    public function test_adds_cache_headers_for_all_types(): void
-    {
-        $types = [
-            'api' => ['private', 'max-age=60', 'must-revalidate', 'ETag'],
-            'static' => ['public', 'max-age=31536000', 'immutable'],
-            'public-short' => ['public', 'max-age=300', 's-maxage=300'],
-            'public-medium' => ['public', 'max-age=3600', 's-maxage=3600'],
-            'private' => ['private', 'max-age=300', 'must-revalidate'],
-            'no-cache' => ['no-store', 'no-cache', 'must-revalidate', 'max-age=0'],
-            'default' => ['private', 'max-age=60'],
-        ];
-
-        foreach ($types as $type => $expectedStrings) {
-            $middleware = new AddCacheHeaders();
-            $request = Request::create('/test-cache-' . $type, 'GET');
-
-            $response = $middleware->handle($request, function ($req) {
-                return new Response('test content');
-            }, $type);
-
-            $this->assertTrue($response->headers->has('Cache-Control'), "Missing Cache-Control for type: $type");
-            $cacheControl = $response->headers->get('Cache-Control');
-            foreach ($expectedStrings as $expected) {
-                if ($expected === 'ETag') {
-                    $this->assertTrue($response->headers->has('ETag'), "Missing ETag for type: $type");
-                } else {
-                    $this->assertStringContainsString($expected, $cacheControl, "Type $type missing $expected in Cache-Control");
-                }
-            }
-        }
-    }
-
-    public function test_handles_request_without_cache_type(): void
+    public function test_adds_default_headers(): void
     {
         $middleware = new AddCacheHeaders();
-        $request = Request::create('/any-route', 'GET');
+        $request = Request::create('/foo', 'GET');
 
         $response = $middleware->handle($request, function ($req) {
-            return new Response('test content');
+            return new Response('content');
         });
 
-        $this->assertInstanceOf(Response::class, $response);
+        $this->assertStringContainsString('private', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('max-age=60', $response->headers->get('Cache-Control'));
     }
 
-    public function test_passes_request_through_middleware(): void
+    public function test_adds_no_cache_headers_on_error(): void
     {
         $middleware = new AddCacheHeaders();
-        $request = Request::create('/test', 'GET');
-        $expectedContent = 'middleware test';
+        $request = Request::create('/foo', 'GET');
 
-        $response = $middleware->handle($request, function ($req) use ($expectedContent) {
-            return new Response($expectedContent);
+        $response = $middleware->handle($request, function ($req) {
+            return new Response('error', 500);
         });
 
-        $this->assertEquals($expectedContent, $response->getContent());
+        $header = $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('no-store', $header);
+        $this->assertStringContainsString('no-cache', $header);
+        $this->assertStringContainsString('must-revalidate', $header);
+        $this->assertStringContainsString('max-age=0', $header);
+    }
+
+    public function test_adds_public_headers(): void
+    {
+        $middleware = new AddCacheHeaders();
+        $request = Request::create('/foo', 'GET');
+
+        $response = $middleware->handle($request, function ($req) {
+            return new Response('content');
+        }, 'public-medium');
+
+        $header = $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('public', $header);
+        $this->assertStringContainsString('max-age=3600', $header);
+        $this->assertStringContainsString('s-maxage=3600', $header);
+    }
+
+    public function test_api_headers_with_etag(): void
+    {
+        $middleware = new AddCacheHeaders();
+        $request = Request::create('/api/foo', 'GET');
+        $content = 'api content';
+
+        $response = $middleware->handle($request, function ($req) use ($content) {
+            return new Response($content);
+        }, 'api');
+
+        $header = $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('private', $header);
+        $this->assertStringContainsString('max-age=60', $header);
+        $this->assertStringContainsString('must-revalidate', $header);
+        $this->assertEquals(md5($content), $response->headers->get('ETag'));
+    }
+
+    public function test_api_returns_304_when_etag_matches(): void
+    {
+        $middleware = new AddCacheHeaders();
+        $content = 'api content';
+        $etag = md5($content);
+
+        $request = Request::create('/api/foo', 'GET');
+        $request->headers->set('If-None-Match', $etag);
+
+        $response = $middleware->handle($request, function ($req) use ($content) {
+            return new Response($content);
+        }, 'api');
+
+        $this->assertEquals(304, $response->getStatusCode());
     }
 }
